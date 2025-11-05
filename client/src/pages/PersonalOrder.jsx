@@ -1,6 +1,11 @@
+import React from 'react'
+
 const PersonalOrder = () => {
   return (
-    <div>PersonalOrder</div>
+    <div>
+      <h1>Your Personal Orders</h1>
+      {/* Add your order details here */}
+    </div>
   )
 }
 
