@@ -18,94 +18,110 @@ import UploadProductPage from "../pages/UploadProductPage";
 import ProductPage from "../pages/ProductAdminPage";
 import AdminPermission from "../layouts/AdminPermission";
 import CategoryWiseProductList from "../pages/CategoryWiseProductList";
-import ProductDetailsDisplayPage from "../components/ViewPageComponent/ProductDetailsDisplayPage";
+import ProductDetailsDisplayPage from "../pages/ProductDetailsDisplayPage";
 
 const router = createBrowserRouter([
-    {
-        path : "/",
-        element : <App/>,
-        children : [
-            {
-                path : "/",
-                element : <Home/>,
-            },
-            {
-                path : "search",
-                element : <SearchPage/>,
-            },
-            {
-                path : "login",
-                element : <Login/>,
-            },
-            {
-                path : "register",
-                element : <Register/>,
-            },
-            {
-                path : "forgot-password",
-                element : <ForgotPassword/>,
-            },
-            {
-                path : "verify-forgot-password-otp",
-                element : <VerifyForgotPasswordOtp/>,
-            },
-            {
-                path : "reset-password",
-                element : <ResetPassword/>,
-            },
-            {
-                path : "user",
-                element : <UserMenuPage/>,
-            },
-            {
-                path : "dashboard",
-                element : <Dashboard/>,
-                children : [
-                    {
-                        path : "profile",
-                        element : <PersonalDetails/>,
-                    },
-                    {
-                        path : "orders",
-                        element : <PersonalOrder/>,
-                    },
-                    {
-                        path : "address",
-                        element : <PersonalAddress/>,
-                    },
-                    {
-                        path : "category",
-                        element : <AdminPermission><CategoryPage/></AdminPermission>,
-                    },
-                    {
-                        path : "subcategory",
-                        element : <AdminPermission><SubCategoryPage/></AdminPermission>,
-                    },
-                    {
-                        path : "upload-product",
-                        element : <AdminPermission><UploadProductPage/></AdminPermission>,
-                    },
-                    {
-                        path : "product",
-                        element : <AdminPermission><ProductPage/></AdminPermission>,
-                    },
-                ]
-            },
-            {
-                path : ":category",
-                children : [
-                    {
-                        path : ":subCategory",
-                        element : <CategoryWiseProductList/>
-                    }
-                ]
-            },
-            {
-                path : "/product/:product-details",
-                element : <ProductDetailsDisplayPage/>
-            }
-        ]
-    }
-])
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
+      {
+        path: "search",
+        element: <SearchPage />,
+      },
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "register",
+        element: <Register />,
+      },
+      {
+        path: "forgot-password",
+        element: <ForgotPassword />,
+      },
+      {
+        path: "verify-forgot-password-otp",
+        element: <VerifyForgotPasswordOtp />,
+      },
+      {
+        path: "reset-password",
+        element: <ResetPassword />,
+      },
+      {
+        path: "user",
+        element: <UserMenuPage />,
+      },
+      {
+        path: "dashboard",
+        element: <Dashboard />,
+        children: [
+          {
+            path: "profile",
+            element: <PersonalDetails />,
+          },
+          {
+            path: "orders",
+            element: <PersonalOrder />,
+          },
+          {
+            path: "address",
+            element: <PersonalAddress />,
+          },
+          {
+            path: "category",
+            element: (
+              <AdminPermission>
+                <CategoryPage />
+              </AdminPermission>
+            ),
+          },
+          {
+            path: "subcategory",
+            element: (
+              <AdminPermission>
+                <SubCategoryPage />
+              </AdminPermission>
+            ),
+          },
+          {
+            path: "upload-product",
+            element: (
+              <AdminPermission>
+                <UploadProductPage />
+              </AdminPermission>
+            ),
+          },
+          {
+            path: "product",
+            element: (
+              <AdminPermission>
+                <ProductPage />
+              </AdminPermission>
+            ),
+          },
+        ],
+      },
+      {
+        path: ":category",
+        children: [
+          {
+            path: ":subCategory",
+            element: <CategoryWiseProductList />,
+          },
+        ],
+      },
+      {
+        path: "/product/:product-details",
+        element: <ProductDetailsDisplayPage />,
+      },
+    ],
+  },
+]);
 
-export default router
+export default router;

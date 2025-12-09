@@ -62,7 +62,7 @@ import { IoSearchCircle } from "react-icons/io5";
 
 
   useEffect(()=>{
-    const checkdebounceFlag = true
+    var checkdebounceFlag = true
     const delayDebounceFn = setTimeout(() => {
       if(checkdebounceFlag) {
         fetchAllProducts();
