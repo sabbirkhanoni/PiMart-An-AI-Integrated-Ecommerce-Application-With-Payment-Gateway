@@ -6,6 +6,11 @@ import SummaryApi from "../common/SummaryApi";
 import { FaAngleRight, FaAngleLeft } from "react-icons/fa";
 import { DisplayPriceInBDT } from "../utils/DisplayPriceInBDT";
 import Divider from "../components/Divider";
+import { TbTruckDelivery } from "react-icons/tb";
+import { SiCashapp } from "react-icons/si";
+import { IoPricetags } from "react-icons/io5";
+import { BiSolidOffer } from "react-icons/bi";
+import { FaRunning } from "react-icons/fa";
 
 const ProductDetailsDisplayPage = () => {
   const params = useParams();
@@ -115,12 +120,77 @@ const ProductDetailsDisplayPage = () => {
               <h5 className="bg-orange-400 w-fit p-1 rounded-full text-white text-sm lg:text-md">10 Min</h5>
               <h1 className='font-semibold text-lg pl-1'>{productDetailsData.name}</h1>
               <p className='bg-gray-200 w-fit p-1 rounded-3xl px-3 text-sm lg:text-md'>{productDetailsData.unit}</p>
-              <div className="flex items-center gap-4 border-1 p-2 rounded-full bg-blue-200 border-blue-300">
+              <div className="flex w-fit items-center gap-1 border-1 p-2 rounded-full bg-blue-200 border-blue-300">
                 <h3 className='font-semibold text-lg'>Price: </h3>
-                <p className='font-bold text-md lg:text-lg rounded-3xl px-3'>{DisplayPriceInBDT(productDetailsData.price)}</p>
+                <p className='font-bold text-md lg:text-lg px-3'>{DisplayPriceInBDT(productDetailsData.price)}</p>
               </div>
+              
+              {
+                productDetailsData.stock === 0 ? (
+                  <p className="bg-red-100 w-fit p-1 px-2 rounded-full text-red-600 text-xs">Out of Stock</p>
+                ) : (
+                  <div className="flex gap-2 items-center">
+                    <button className="bg-blue-500 hover:bg-blue-600 hover:border-blue-600 my-2 text-md font-semibold px-4 rounded-full py-2 text-white ">Add To Cart</button>
+                    <p className="bg-green-100 w-fit p-1 px-2 rounded-full text-green-600 text-xs">In Stock</p>
+                  </div>
+                )
+              }
+             
+
+
+
               <Divider />
-              <button className="bg-blue-500 hover:bg-blue-600 hover:border-blue-600 my-2 text-md font-semibold px-4 rounded-full py-2 text-white ">Add To Cart</button>
+              <h2 className="font-bold text-sm">Why Shopping From Us?</h2>
+              <div className='flex gap-5 items-center'>
+                <div className="">
+                  <TbTruckDelivery className="text-2xl"/>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold">Fast Delivery</h3>
+                  <p className="text-sm">Get your products delivered to your doorstep in no time!</p>
+                </div>
+              </div>
+
+              <div className='flex gap-5 items-center'>
+                <div className="">
+                  <FaRunning className="text-2xl"/>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold">Fast Delivery</h3>
+                  <p className="text-sm">Get your products delivered to your doorstep in no time!</p>
+                </div>
+              </div>
+
+              <div className='flex gap-5 items-center'>
+                <div className="">
+                  <SiCashapp className="text-xl"/>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold">Cash on Delivery</h3>
+                  <p className="text-sm">Pay for your order upon delivery!</p>
+                </div>
+              </div>
+
+              <div className='flex gap-5 items-center'>
+                <div className="">
+                  <IoPricetags className="text-2xl"/>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold">Best Price</h3>
+                  <p className="text-sm">Get the best price for your products!</p>
+                </div>
+              </div>
+
+              <div className='flex gap-5 items-center'>
+                <div className="">
+                  <BiSolidOffer className="text-2xl"/>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold">Exclusive Offers</h3>
+                  <p className="text-sm">Get exclusive offers and discounts!</p>
+                </div>
+              </div>
+
         </div>
     </section>
   );
