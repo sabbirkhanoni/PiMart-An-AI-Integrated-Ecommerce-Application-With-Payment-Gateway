@@ -69,6 +69,37 @@ export const AddProductController = async (request, response) => {
   }
 };
 
+export const UpdateProductController = async (request, response) => {
+  try {
+    const { _id } = request.body;
+    if( !_id ) {
+      return response.status(400).json({
+        message: "Please provide product _id",
+        error: true,
+        success: false,
+      });
+    }
+
+    const updatedProduct = await ProductModel.updateOne({ _id: _id }, { $set: { ...request.body } });
+
+    if (updatedProduct.modifiedCount > 0) {
+      return response.status(200).json({
+        message: "Product Updated Successfully",
+        error: false,
+        success: true,
+        data: updatedProduct,
+      });
+    }
+
+  }catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success:false,
+    })
+  }
+}
+
 export const GetAllProductsController = async (request, response) => {
   try {
     //pagination dependent
@@ -94,7 +125,7 @@ export const GetAllProductsController = async (request, response) => {
       : {};
 
     const [data, totalCount] = await Promise.all([
-      ProductModel.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      ProductModel.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).populate("category").populate("subCategory"),
       ProductModel.countDocuments(query),
     ]);
 
