@@ -103,6 +103,10 @@ const SummaryApi = {
     url: "/api/product/get-product-details",
     method: "post",
   },
+  deleteProduct: {
+    url: "/api/product/delete-product",
+    method: "delete",
+  },
 };
 
 export default SummaryApi;

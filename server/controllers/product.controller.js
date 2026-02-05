@@ -100,6 +100,37 @@ export const UpdateProductController = async (request, response) => {
   }
 }
 
+export const DeleteProductController = async (request, response) => {
+  try {
+    const { _id } = request.body;
+    if( !_id ) {
+      return response.status(400).json({
+        message: "Please provide product _id",
+        error: true,
+        success: false,
+      });
+    }
+
+    const deleteProduct = await ProductModel.deleteOne({ _id: _id });
+
+    if(deleteProduct) {
+      return response.status(200).json({
+        message: "Product Deleted Successfully",
+        error: false,
+        success: true,
+        data: deleteProduct,
+      });
+    }
+
+  }catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success:false,
+    })
+  }
+}
+
 export const GetAllProductsController = async (request, response) => {
   try {
     //pagination dependent
