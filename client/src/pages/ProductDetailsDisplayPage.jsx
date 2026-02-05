@@ -11,6 +11,7 @@ import { SiCashapp } from "react-icons/si";
 import { IoPricetags } from "react-icons/io5";
 import { BiSolidOffer } from "react-icons/bi";
 import { FaRunning } from "react-icons/fa";
+import {calculatePriceWithDiscount} from "../utils/calculatePriceWithDiscount.js";
 
 const ProductDetailsDisplayPage = () => {
   const params = useParams();
@@ -113,16 +114,52 @@ const ProductDetailsDisplayPage = () => {
                   <FaAngleRight /></button>
               </div>
             </div>
+
+            <Divider />
+
+            {
+              productDetailsData.description && (
+                <div>
+                  <h2 className="font-bold text-sm">Product Description</h2>
+                  <p className="text-sm text-gray-700">{productDetailsData.description}</p>
+                </div>
+              )
+            }
+
+            {
+                productDetailsData?.more_details && Object.keys(productDetailsData?.more_details).map((element,index) => {
+                return (
+                  <div key={index}>
+                    <h2 className="font-bold text-sm">{element}</h2>
+                    <p className="text-sm">{productDetailsData?.more_details[element]}</p>
+                  </div>
+                )
+                })
+            }
         </div>
 
         {/* Right Part */}
         <div className='p-3 space-y-4'>
-              <h5 className="bg-orange-400 w-fit p-1 rounded-full text-white text-sm lg:text-md">10 Min</h5>
+              <h5 className="bg-orange-400 w-fit p-1 rounded-full text-white text-sm lg:text-md">{productDetailsData.stock} in stock</h5>
               <h1 className='font-semibold text-lg pl-1'>{productDetailsData.name}</h1>
               <p className='bg-gray-200 w-fit p-1 rounded-3xl px-3 text-sm lg:text-md'>{productDetailsData.unit}</p>
+              {
+                productDetailsData.discount > 0 && (
+                  <p className="text-md text-white bg-green-600 w-fit px-2 py-1 rounded-full">{productDetailsData.discount}% OFF</p>
+                )
+              }
               <div className="flex w-fit items-center gap-1 border-1 p-2 rounded-full bg-blue-200 border-blue-300">
-                <h3 className='font-semibold text-lg'>Price: </h3>
-                <p className='font-bold text-md lg:text-lg px-3'>{DisplayPriceInBDT(productDetailsData.price)}</p>
+               {
+                productDetailsData.discount > 0 ? (
+                  <>
+                    
+                    <p className="text-sm text-red-500 line-through">{DisplayPriceInBDT(productDetailsData.price)}</p>
+                    <p className="text-sm text-green-600 font-bold">{DisplayPriceInBDT(calculatePriceWithDiscount(productDetailsData.price, productDetailsData.discount))}</p>
+                  </>
+                ) : (
+                  <p className="text-sm font-semibold text-gray-800">{DisplayPriceInBDT(productDetailsData.price)}</p>
+                )
+               }
               </div>
               
               {
@@ -135,6 +172,8 @@ const ProductDetailsDisplayPage = () => {
                   </div>
                 )
               }
+
+              
              
 
 
@@ -190,7 +229,6 @@ const ProductDetailsDisplayPage = () => {
                   <p className="text-sm">Get exclusive offers and discounts!</p>
                 </div>
               </div>
-
         </div>
     </section>
   );

@@ -1,9 +1,43 @@
 import React from 'react'
 import EditProductByAdmin from '../ViewPageComponent/EditProductByAdmin';
 import { useState } from 'react';
+import ConfirmationPermissionBox from '../Mini/ConfirmationPermissionBox';
+import AxiosToastError from '../../utils/AxioxToastError';
+import Axios from '../../utils/Axios';
+import SummaryApi from '../../common/SummaryApi';
+import toast from 'react-hot-toast';
+
 
 const ProductDisplayDesignCardAdmin = ({ productData, fetchAllProducts }) => {
   const [editPanelOpen, setEditPanelOpen] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+ 
+  const handleCancelDelete = () => {
+    setOpenDeleteModal(false);
+  }
+
+  const handleConfirmDelete = async () => {
+    try{
+      const response = await Axios({
+        ...SummaryApi.deleteProduct,
+        data: {
+          _id: productData._id
+        }
+      })
+
+      const { data : responseData } = response
+      if(responseData.success) {
+        toast.success(responseData.message)
+        setOpenDeleteModal(false);
+        if(fetchAllProducts) {
+          fetchAllProducts();
+        }
+      }
+    } catch (error) {
+      AxiosToastError(error);
+    }
+  }
+
   return (
     <div className="w-[150px] md:w-[185px] lg:w-[185px] bg-white p-3 rounded shadow-md flex flex-col items-center gap-2 h-full">
       <div className="w-full h-[100px] flex items-center justify-center">
@@ -22,7 +56,9 @@ const ProductDisplayDesignCardAdmin = ({ productData, fetchAllProducts }) => {
           onClick={() => setEditPanelOpen(true)}>
           Edit
         </button>
-        <button className="bg-red-500 w-full hover:bg-red-600 text-white text-sm font-semibold py-1 px-2 rounded">
+        <button
+          onClick={() => setOpenDeleteModal(true)}
+          className="bg-red-500 w-full hover:bg-red-600 text-white text-sm font-semibold py-1 px-2 rounded">
           Delete
         </button>
       </div>
@@ -32,8 +68,13 @@ const ProductDisplayDesignCardAdmin = ({ productData, fetchAllProducts }) => {
           <EditProductByAdmin productData={productData} close={() => setEditPanelOpen(false)} fetchAllProducts={fetchAllProducts} />
         )
       }
-      
 
+      {
+        openDeleteModal && (
+          <ConfirmationPermissionBox confirm={handleConfirmDelete} close={handleCancelDelete} />
+        )
+      }
+      
     </div>
   );
 };
