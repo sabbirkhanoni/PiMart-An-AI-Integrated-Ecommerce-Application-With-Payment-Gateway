@@ -7,14 +7,15 @@ import { useEffect } from 'react';
 import ProductSkeletonCardLoading from '../Mini/ProductSkeletonCardLoading';
 import ProductDisplayCard from './ProductDisplayCard';
 import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
+import { useSelector } from 'react-redux';
+import { URLvalidation } from '../../utils/URLValidation';
 
 
 const CategoryWiseProductDispalyAtHome = ({categoryId,categoryName}) => {
 
     const [productDataByCategoryWise, setProductDataByCategoryWise] = useState([]);
     const [loading, setLoading] = useState(false);
-
-
+    const fetchAllSubCategoryDataFromReduxStore = useSelector(state => state.product.allSubCategory)
     const containeroverflowRef = useRef();
 
 
@@ -49,6 +50,19 @@ const CategoryWiseProductDispalyAtHome = ({categoryId,categoryName}) => {
         containeroverflowRef.current.scrollLeft += 200;
     }
 
+    const handleRedirectToCategoryWiseProductList = () => {
+          const subCategory = fetchAllSubCategoryDataFromReduxStore.find(subCat => {
+            const filteredSubCategory = subCat.category.some(cat => {
+              return cat._id == categoryId
+            })
+            return filteredSubCategory ? true : null
+          })
+          const url = `/${URLvalidation(categoryName)}-${categoryId}/${URLvalidation(subCategory?.name)}-${subCategory?._id}`;
+          return url;
+      }
+
+    const redirectedURL = handleRedirectToCategoryWiseProductList();
+
     useEffect(() => {
         fetchProductByCategoryWise();
     }, [])
@@ -63,7 +77,7 @@ const CategoryWiseProductDispalyAtHome = ({categoryId,categoryName}) => {
           <div>
             <div className = "container mx-auto flex items-center justify-between p-4 gap-4">
               <h3 className= "font-semibold text-lg md:text-xl">{categoryName}</h3>
-              <Link to="" className="text-blue-500 hover:text-blue-600">See More</Link>
+              <Link to={redirectedURL} className="text-blue-500 hover:text-blue-600">See More</Link>
             </div>
 
             <div className='relative flex items-center'>

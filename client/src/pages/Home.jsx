@@ -22,7 +22,6 @@ export const Home = () => {
       })
       const url = `/${URLvalidation(categoryName)}-${categoryId}/${URLvalidation(subCategory.name)}-${subCategory._id}`;
       navigate(url);
-
   }
 
 
