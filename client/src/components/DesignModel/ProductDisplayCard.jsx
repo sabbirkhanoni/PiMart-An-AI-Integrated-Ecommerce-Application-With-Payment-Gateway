@@ -10,8 +10,8 @@ const ProductDisplayCard = ({ productData }) => {
   )}`;
   return (
     <Link to={URL}>
-      <div className="lg:h-[390px] h-[300px] lg:w-[350px] border border-gray-200 p-2 lg:p-4 lg:space-y-3 grid max-w-58 w-[195px] rounded shadow-lg overflow-hidden hover:shadow-lg">
-        <div className="min-h-25 lg:min-h-20 max-h-15 lg:max-h-32 rounded">
+      <div className="lg:h-[400px] w-[175px] h-[310px] lg:w-[350px] border border-gray-200 p-2 lg:p-4 lg:space-y-3 grid max-w-58 rounded shadow-lg overflow-hidden hover:shadow-lg">
+        <div className="min-h-25 lg:min-h-20 max-h-15 lg:max-h-35 pt-2 rounded">
           <img
             src={productData?.image[0]}
             alt={productData?.name}
@@ -28,15 +28,14 @@ const ProductDisplayCard = ({ productData }) => {
           <div className="flex flex-col items-center gap-2">
             <div className="">{productData?.unit}</div>
               {
-                  productData?.discount > 0 && (
-                    <div className="text-xs lg:text-sm text-white bg-green-600 w-fit px-1 py-1 my-1 lg:px-2 lg:py-1 rounded-full">
-                      {productData?.discount}% OFF
-                    </div>
-                  )
+                productData?.discount > 0 && (
+                  <div className="text-xs lg:text-sm text-white bg-green-600 w-fit px-[0.5px] py-1 my-1 lg:px-2 lg:py-1 rounded-full">
+                    <p className="flex items-center justify-center">{productData?.discount}% OFF</p>
+                  </div>
+                )
               }
           </div>
           
-
           {
             productData?.discount > 0 ? (
               <div className="">

@@ -55,14 +55,19 @@ const productSchema = new mongoose.Schema({
 
 
 //create a text index for searching products by name
-productSchema.index({
+productSchema.index(
+  {
     name: "text",
     description: "text",
-},{
+  },
+  {
     //priority levels for text search
-    name: 10,
-    description: 5
-})
+    weights: {
+      name: 10,
+      description: 5,
+    }
+  }
+);
 
 const ProductModel = mongoose.model("product", productSchema);
 

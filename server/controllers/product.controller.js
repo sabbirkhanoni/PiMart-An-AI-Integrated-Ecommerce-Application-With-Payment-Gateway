@@ -1,3 +1,4 @@
+import { populate } from "dotenv";
 import ProductModel from "../models/product.model.js";
 
 export const AddProductController = async (request, response) => {
@@ -283,6 +284,49 @@ export const GetSingleProductDetailsController = async (request, response) => {
     });
   } catch (error) {
     response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
+
+export const GetProductBySearchController = async (request, response) => {
+  try {
+    let { search, page, limit } = request.body;
+
+    if (!page) {
+      page = 1;
+    }
+
+    if (!limit) {
+      limit = 10;
+    }
+
+    const query = search ? {
+        $text: {
+          $search: search,
+        },
+    } : {};
+
+    const [productData, totalCount] = await Promise.all([
+      ProductModel.find(query).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).populate("category subCategory"),
+      ProductModel.countDocuments(query),
+    ]);
+
+    return response.status(200).json({
+      message: "Product data fetched successfully",
+      error: false,
+      success: true,
+      data: productData,
+      totalCount: totalCount,
+      page: page,
+      totalNoPages: Math.ceil(totalCount / limit),
+      limit: limit,
+    });
+    
+  } catch (error) {
+    return response.status(500).json({
       message: error.message || error,
       error: true,
       success: false,
