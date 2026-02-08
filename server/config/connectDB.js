@@ -12,7 +12,9 @@ if(!process.env.MONGODB_URI){
 
 async function connectDB() {
     try {
-        await mongoose.connect(process.env.MONGODB_URI)
+        await mongoose.connect(process.env.MONGODB_URI, {
+            autoIndex: true,
+        })
         console.log('Connected to the database');
     }catch(error){
         console.log('Error while connecting to the database', error);

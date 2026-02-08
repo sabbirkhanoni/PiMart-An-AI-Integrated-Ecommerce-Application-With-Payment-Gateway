@@ -13,6 +13,11 @@ const Search = () => {
 
   const [isSearchPage, setIsSearchPage] = useState(false);
 
+  //search
+  const params = useLocation();
+  const searchParams = params?.search?.slice(3);
+
+
   useEffect(() => {
     const isSearch = location.pathname === "/search";
     setIsSearchPage(isSearch);
@@ -20,6 +25,12 @@ const Search = () => {
 
   const redirectToSearchPage = () => {
     navigate("/search");
+  };
+
+  const handleOnChangeSearchInput = (e) => {
+    const value = e.target.value;
+    const searchParams = `/search?query=${value}`;
+    navigate(searchParams);
   };
 
   return (
@@ -103,9 +114,11 @@ const Search = () => {
           <div className="w-full h-full">
             <input
               type="text"
+              defaultValue={searchParams}
               placeholder="Search Anything"
               autoFocus
               className="bg-transparent w-full h-full outline-none px-3"
+              onChange={handleOnChangeSearchInput}
             />
           </div>
         )}
