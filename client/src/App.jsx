@@ -15,7 +15,7 @@ import {
 } from "./store/productSlice";
 import Axios from "./utils/Axios";
 import AxiosToastError from "./utils/AxioxToastError";
-import { handleAddToCart } from "./store/cart.store";
+import GlobalContexts from "./contexts/GlobalContext";
 
 function App() {
   const dispatch = useDispatch();
@@ -64,33 +64,16 @@ function App() {
     }
   };
 
-  //when user login then also fetch the cart products to show in the header
-  const fetchCartProducts = async () => {
-    try {
-      const response = await Axios({
-        ...SummaryApi.getCartProducts,
-      })
-      const { data: responseData } = response;
-
-      // he
-      if(responseData.success) {
-        dispatch(handleAddToCart(responseData.data))
-      }
-
-      } catch (error) {
-        AxiosToastError(error);
-      }
-  };
+  
 
   useEffect(() => {
-    fetchCartProducts();
     fetchUser();
     fetchAllCategories();
     fetchAllSubCategories();
   }, []);
 
   return (
-    <>
+    <GlobalContexts>
       <Header />
       <main className="min-h-[78vh] lg:px-5 lg:pb-5">
         <Outlet />
@@ -111,7 +94,7 @@ function App() {
           },
         }}
       />
-    </>
+    </GlobalContexts>
   );
 }
 
