@@ -1,13 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 import { DisplayPriceInBDT } from "../../utils/DisplayPriceInBDT";
 import { URLvalidation } from "../../utils/URLValidation";
 import { Link } from "react-router-dom";
 import { calculatePriceWithDiscount } from "../../utils/calculatePriceWithDiscount";
+import Axios from "../../utils/Axios";
+import AxiosToastError from "../../utils/AxioxToastError";
+import SummaryApi from "../../common/SummaryApi";
+import toast from "react-hot-toast";
 
 const ProductDisplayCard = ({ productData }) => {
+
+  const [loading, setLoading] = useState(false);
+
   const URL = `/product/${URLvalidation(productData?.name)}-${URLvalidation(
     productData?._id
   )}`;
+
+  const handleAddToCartItem = async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      try {
+        setLoading(true);
+        const response = await Axios({
+          ...SummaryApi.addProductToCart,
+          data: {
+            productId: productData?._id,
+          },
+        });
+
+        const { data: responseData } = response;
+        if(responseData.success) {
+          toast.success("Product added to cart successfully");
+        }
+      } catch (error) {
+        AxiosToastError(error);
+      } finally {
+        setLoading(false);
+      }
+
+  }
+
+
+
   return (
     <Link to={URL}>
       <div className="lg:h-[400px] w-[175px] h-[310px] lg:w-[350px] border border-gray-200 p-2 lg:p-4 lg:space-y-3 grid max-w-58 rounded shadow-lg overflow-hidden hover:shadow-lg">
@@ -58,8 +93,10 @@ const ProductDisplayCard = ({ productData }) => {
           <div className="w-full">
             {
               productData?.stock > 0 ? (
-                <button className="bg-blue-500 text-white p-1 px-4 lg:px-6 w-full rounded-full hover:bg-blue-600 transition-all duration-300">
-                  Cart
+                <button
+                  onClick={handleAddToCartItem}
+                  className="bg-blue-500 cursor-pointer text-white p-1 px-4 lg:px-6 w-full rounded-full hover:bg-blue-600 transition-all duration-300">
+                  Add to Cart
                 </button>
               ) :
               (

@@ -108,9 +108,17 @@ const SummaryApi = {
     method: "delete",
   },
   searchProduct: {
-    url: "api/product/search-product",
+    url: "/api/product/search-product",
     method: "post"
-  }
+  },
+  addProductToCart: {
+    url: "/api/cart/add",
+    method: "post"
+  },
+  getCartProducts: {
+    url: "/api/cart/get",
+    method: "get"
+  },
 };
 
 export default SummaryApi;

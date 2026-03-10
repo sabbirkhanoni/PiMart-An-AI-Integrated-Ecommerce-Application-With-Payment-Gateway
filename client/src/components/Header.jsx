@@ -12,10 +12,14 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import UserMenu from "./userMenu";
+import { useEffect } from "react";
+import { DisplayPriceInBDT } from "../utils/DisplayPriceInBDT";
 
 
 const Header = () => {
   const [isMobile] = useMobile();
+
+  
   //find url current location
   const location = useLocation();
   const navigate = useNavigate();
@@ -23,10 +27,17 @@ const Header = () => {
   const user = useSelector((state) => state?.user);
 
   const [openUserMenu, setOpenUserMenu] = useState(false);
+  const cartProduct = useSelector(state => state?.cart?.cart);
 
+  const [cartProductTotalPrice, setCartProductTotalPrice] = useState(0);
+  const [cartProductTotalQuantity, setCartProductTotalQuantity] = useState(0);
 
-  
-
+  useEffect(() => {
+    let totalQuantity = cartProduct.reduce((prev, current) => {
+      return prev + current.quantity;
+    }, 0);
+    setCartProductTotalQuantity(totalQuantity);
+  }, [cartProduct])
 
   const redirectToLoginPage = () => {
     navigate("/login");
@@ -115,7 +126,6 @@ const Header = () => {
                                 </div>
                               )
                             }
-
                         </div>
                       ) : (
 
@@ -125,14 +135,23 @@ const Header = () => {
                     }
                     
                     
-              <button className="flex items-center gap-4 bg-[#098dff] hover:bg-[#1477cd] px-4 py-3 rounded-lg text-white">
+              <button className="flex items-center gap-2 bg-[#098dff] hover:bg-[#1477cd] px-4 py-2 rounded-lg text-white">
                     {/**cart icon */}
                 <div className="animate-pulse ">
-                  <PiShoppingCartFill size={26}/>
+                  <PiShoppingCartFill size={20}/>
                 </div>
 
                 <div className="font-semibold">
-                  <p>Cart</p>
+                  {
+                    cartProduct[0] ? (
+                      <div className="flex flex-col items-center animate-pulse">
+                        <span className="text-sm">{`Cart (${cartProductTotalQuantity})`}</span>
+                        <span className="text-sm">{`${DisplayPriceInBDT(cartProductTotalPrice)}`}</span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-300">Cart</span>
+                    )
+                  }
                 </div>
 
               </button>

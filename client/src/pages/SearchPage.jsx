@@ -30,11 +30,10 @@ const SearchPage = () => {
           data: {
             page,
             limit: 12,
-            search: searchParams,
+            search: searchParams || "",
           }
         });
       const {data : responseData } = response;
-      console.log("responseData", responseData);
       if(responseData.success) {
         if(responseData.page === 1) {
           setSearchedData(responseData.data)
@@ -50,7 +49,6 @@ const SearchPage = () => {
       }
     }catch (error) {
       AxiosToastError(error)
-      console.log("Error in fetching searched data", error);
     }finally {
       setLoading(false)
     }
@@ -62,7 +60,7 @@ const SearchPage = () => {
     }
   }
 
-  console.log("searchedData", searchedData);
+   
   useEffect(() => {
     fetchSearchedData();
   }, [page, searchParams]);
@@ -76,7 +74,7 @@ const SearchPage = () => {
       <InfinteScroll 
             className='flex items-center justify-center'
             dataLength={searchedData.length}
-            hasMore={true}
+            hasMore={page < totalPages}
             next={handleFethchMoreData}
        >
       <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 py-4 gap-1'>
