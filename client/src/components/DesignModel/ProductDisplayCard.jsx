@@ -8,6 +8,7 @@ import AxiosToastError from "../../utils/AxioxToastError";
 import SummaryApi from "../../common/SummaryApi";
 import toast from "react-hot-toast";
 import { useGlobalContext } from "../../contexts/GlobalContext";
+import AddToCartButton from "./AddToCartButton";
 
 const ProductDisplayCard = ({ productData }) => {
 
@@ -16,37 +17,6 @@ const ProductDisplayCard = ({ productData }) => {
   const URL = `/product/${URLvalidation(productData?.name)}-${URLvalidation(
     productData?._id
   )}`;
-
-  const { fetchCartProducts } = useGlobalContext();
-
-  const handleAddToCartItem = async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      try {
-        setLoading(true);
-        const response = await Axios({
-          ...SummaryApi.addProductToCart,
-          data: {
-            productId: productData?._id,
-          },
-        });
-
-        const { data: responseData } = response;
-        if(responseData.success) {
-          toast.success("Product added to cart successfully");
-          if(fetchCartProducts) {
-            fetchCartProducts();
-          }
-        }
-      } catch (error) {
-        AxiosToastError(error);
-      } finally {
-        setLoading(false);
-      }
-
-  }
-
 
 
   return (
@@ -99,11 +69,7 @@ const ProductDisplayCard = ({ productData }) => {
           <div className="w-full">
             {
               productData?.stock > 0 ? (
-                <button
-                  onClick={handleAddToCartItem}
-                  className="bg-blue-500 cursor-pointer text-white p-1 px-4 lg:px-6 w-full rounded-full hover:bg-blue-600 transition-all duration-300">
-                  Add to Cart
-                </button>
+                <AddToCartButton productData={productData} />
               ) :
               (
                 <div className="text-sm text-red-500 text-center">

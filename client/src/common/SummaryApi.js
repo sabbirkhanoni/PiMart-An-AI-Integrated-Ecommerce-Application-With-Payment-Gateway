@@ -119,6 +119,14 @@ const SummaryApi = {
     url: "/api/cart/get",
     method: "get"
   },
+  updateCartProduct: {
+    url: "/api/cart/update",
+    method: "put"
+  },
+  deleteCartProduct: {
+    url: "/api/cart/delete",
+    method: "delete"
+  }
 };
 
 export default SummaryApi;

@@ -44,7 +44,7 @@ export const AddProductToCartController = async (request, response) => {
 
         if (updateUserCart) {
             return response.status(200).json({
-                message: "Product added to cart successfully",
+                message: "Product added to cart",
                 error: false,
                 success: true,
                 data : savedCartProduct
@@ -80,6 +80,89 @@ export const GetAllCartProducts = async (request, reponse) => {
             message: error.message || error,
             error: true,
             success: false,
+        })
+    }
+}
+
+export const UpdateCartProductQuantityController = async (request, response) => {
+    try {
+
+        const userId = request.userId
+        const { _id, quantity } = request.body
+
+        if(!_id || quantity === undefined){
+            return response.status(400).json({
+                message: "Cart product ID and quantity are required",
+                error: true,
+                success: false
+            })
+        }
+
+        // // quantity 0 → delete item
+        // if(quantity === 0){
+        //     await CartProductModel.deleteOne({
+        //         _id: _id,
+        //         userId: userId
+        //     })
+
+        //     return response.status(200).json({
+        //         message: "Product removed from cart",
+        //         error: false,
+        //         success: true
+        //     })
+        // }
+
+        const updateCartProduct = await CartProductModel.updateOne(
+            { _id: _id, userId: userId },
+            { quantity: quantity }
+        )
+
+        return response.status(200).json({
+            message: "Cart updated successfully",
+            error: false,
+            success: true,
+            data: updateCartProduct
+        })
+
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false
+        })
+    }
+}
+
+export const RemoveProductFromCartController = async (request, response) => {
+    try {
+
+        const userId = request.userId;
+        const { _id } = request.body;
+
+        if(!_id){
+            return response.status(400).json({
+                message: "Cart ID required",
+                error: true,
+                success: false
+            })
+        }
+
+        const deleteResult = await CartProductModel.deleteOne({
+            _id: _id,
+            userId: userId
+        })
+
+        return response.status(200).json({
+            message: "Product removed from cart",
+            success: true,
+            error: false
+        })
+
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            success: false,
+            error: true
         })
     }
 }

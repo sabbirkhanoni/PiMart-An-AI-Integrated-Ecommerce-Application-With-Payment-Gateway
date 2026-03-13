@@ -39,11 +39,11 @@ const Header = () => {
     setCartProductTotalQuantity(totalQuantity);
 
     let totalPrice = cartProduct.reduce((prev, current) => {
-      return prev + (current.quantity * current.price);
+      return prev + (current.quantity * current.productId.price);
     }, 0);
     setCartProductTotalPrice(totalPrice);
 
-    
+
   }, [cartProduct])
 
   const redirectToLoginPage = () => {
