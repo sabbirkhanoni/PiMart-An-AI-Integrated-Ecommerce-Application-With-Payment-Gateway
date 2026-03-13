@@ -12,6 +12,7 @@ import { IoPricetags } from "react-icons/io5";
 import { BiSolidOffer } from "react-icons/bi";
 import { FaRunning } from "react-icons/fa";
 import {calculatePriceWithDiscount} from "../utils/calculatePriceWithDiscount.js";
+import AddToCartButton from "../components/DesignModel/AddToCartButton.jsx";
 
 const ProductDetailsDisplayPage = () => {
   const params = useParams();
@@ -167,7 +168,12 @@ const ProductDetailsDisplayPage = () => {
                   <p className="bg-red-100 w-fit p-1 px-2 rounded-full text-red-600 text-xs">Out of Stock</p>
                 ) : (
                   <div className="flex gap-2 items-center">
-                    <button className="bg-blue-500 hover:bg-blue-600 hover:border-blue-600 my-2 text-md font-semibold px-4 rounded-full py-2 text-white ">Add To Cart</button>
+                    {/* <button className="bg-blue-500 hover:bg-blue-600 hover:border-blue-600 my-2 text-md font-semibold px-4 rounded-full py-2 text-white ">Add To Cart</button> */}
+                    <div
+                      className="w-[130px]"
+                    >
+                      <AddToCartButton productData={productDetailsData} />
+                    </div>
                     <p className="bg-green-100 w-fit p-1 px-2 rounded-full text-green-600 text-xs">In Stock</p>
                   </div>
                 )
