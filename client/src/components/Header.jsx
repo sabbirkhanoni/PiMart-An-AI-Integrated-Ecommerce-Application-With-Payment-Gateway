@@ -12,8 +12,8 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import UserMenu from "./userMenu";
-import { useEffect } from "react";
 import { DisplayPriceInBDT } from "../utils/DisplayPriceInBDT";
+import { useGlobalContext } from "../contexts/GlobalContext";
 
 
 const Header = () => {
@@ -27,24 +27,8 @@ const Header = () => {
   const user = useSelector((state) => state?.user);
 
   const [openUserMenu, setOpenUserMenu] = useState(false);
-  const cartProduct = useSelector(state => state?.cart?.cart);
 
-  const [cartProductTotalPrice, setCartProductTotalPrice] = useState(0);
-  const [cartProductTotalQuantity, setCartProductTotalQuantity] = useState(0);
-
-  useEffect(() => {
-    let totalQuantity = cartProduct.reduce((prev, current) => {
-      return prev + current.quantity;
-    }, 0);
-    setCartProductTotalQuantity(totalQuantity);
-
-    let totalPrice = cartProduct.reduce((prev, current) => {
-      return prev + (current.quantity * current.productId.price);
-    }, 0);
-    setCartProductTotalPrice(totalPrice);
-
-
-  }, [cartProduct])
+  const {cartProductTotalPrice, cartProductTotalQuantity, cartProduct} = useGlobalContext();
 
   const redirectToLoginPage = () => {
     navigate("/login");

@@ -16,6 +16,8 @@ import {
 import Axios from "./utils/Axios";
 import AxiosToastError from "./utils/AxioxToastError";
 import GlobalContexts from "./contexts/GlobalContext";
+import { FaShoppingCart } from "react-icons/fa";
+import CartDesignMobileView from "./components/DesignModel/CartDesignMobileView";
 
 function App() {
   const dispatch = useDispatch();
@@ -94,6 +96,7 @@ function App() {
           },
         }}
       />
+      <CartDesignMobileView />
     </GlobalContexts>
   );
 }

@@ -118,7 +118,8 @@ const ProductDetailsDisplayPage = () => {
 
             <Divider />
 
-            {
+            <div className="hidden lg:block space-y-3">
+              {
               productDetailsData.description && (
                 <div>
                   <h2 className="font-bold text-sm">Product Description</h2>
@@ -137,6 +138,7 @@ const ProductDetailsDisplayPage = () => {
                 )
                 })
             }
+            </div>
         </div>
 
         {/* Right Part */}
@@ -178,6 +180,29 @@ const ProductDetailsDisplayPage = () => {
                   </div>
                 )
               }
+
+
+              <div className="block lg:hidden">
+              {
+              productDetailsData.description && (
+                <div>
+                  <h2 className="font-bold text-sm">Product Description</h2>
+                  <p className="text-sm text-gray-700">{productDetailsData.description}</p>
+                </div>
+              )
+            }
+
+            {
+                productDetailsData?.more_details && Object.keys(productDetailsData?.more_details).map((element,index) => {
+                return (
+                  <div key={index}>
+                    <h2 className="font-bold text-sm">{element}</h2>
+                    <p className="text-sm">{productDetailsData?.more_details[element]}</p>
+                  </div>
+                )
+                })
+            }
+            </div>
 
               
              

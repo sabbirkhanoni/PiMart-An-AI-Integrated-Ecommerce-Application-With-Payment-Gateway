@@ -1,10 +1,11 @@
-import { createContext, use, useContext, useEffect } from "react";
+import { createContext, use, useContext, useEffect, useState } from "react";
 import Axios from "../utils/Axios";
 import SummaryApi from "../common/SummaryApi";
 import AxiosToastError from "../utils/AxioxToastError";
 import { handleAddToCart } from "../store/cart.store";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import { calculatePriceWithDiscount } from "../utils/calculatePriceWithDiscount";
 
 export const GlobalContext = createContext(null)
 
@@ -13,6 +14,11 @@ export const useGlobalContext = () => useContext(GlobalContext)
 const GlobalContexts = ({children}) => {
 
     const dispatch = useDispatch();
+
+    const cartProduct = useSelector(state => state?.cart?.cart);
+
+    const [cartProductTotalPrice, setCartProductTotalPrice] = useState(0);
+    const [cartProductTotalQuantity, setCartProductTotalQuantity] = useState(0);
 
     //when user login then also fetch the cart products to show in the header
     const fetchCartProducts = async () => {
@@ -78,11 +84,27 @@ const GlobalContexts = ({children}) => {
         fetchCartProducts();
     }, []);
 
+
+    useEffect(() => {
+        let totalQuantity = cartProduct.reduce((prev, current) => {
+        return prev + current.quantity;
+        }, 0);
+        setCartProductTotalQuantity(totalQuantity);
+
+        let totalPrice = cartProduct.reduce((prev, current) => {
+        return prev + (current.quantity * calculatePriceWithDiscount(current.productId.price, current.productId.discount));
+        }, 0);
+        setCartProductTotalPrice(totalPrice);
+  }, [cartProduct])
+
     return (
         <GlobalContext.Provider value={{
                 fetchCartProducts,
                 increaseAndDecreaseQuantityToCartProduct,
-                removeCartProduct
+                removeCartProduct,
+                cartProductTotalPrice,
+                cartProductTotalQuantity,
+                cartProduct
         }}>
             {children}
         </GlobalContext.Provider>
