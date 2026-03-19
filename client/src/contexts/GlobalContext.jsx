@@ -20,6 +20,7 @@ const GlobalContexts = ({children}) => {
     const [savedAmount, setSavedAmount] = useState(0);
     const [cartProductTotalPrice, setCartProductTotalPrice] = useState(0);
     const [cartProductTotalQuantity, setCartProductTotalQuantity] = useState(0);
+    const user = useSelector(state => state?.user);
 
     //when user login then also fetch the cart products to show in the header
     const fetchCartProducts = async () => {
@@ -81,9 +82,14 @@ const GlobalContexts = ({children}) => {
         }
     }
 
+    const handleLogoutCartClear = () => {
+        dispatch(handleAddToCart([]));
+    }
+
     useEffect(() => {
         fetchCartProducts();
-    }, []);
+        handleLogoutCartClear();
+    }, [user]);
 
 
     useEffect(() => {

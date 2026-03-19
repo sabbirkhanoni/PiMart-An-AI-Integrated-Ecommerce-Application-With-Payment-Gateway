@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { IoClose } from 'react-icons/io5'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useGlobalContext } from '../../contexts/GlobalContext';
 import { calculatePriceWithDiscount } from '../../utils/calculatePriceWithDiscount';
 import { DisplayPriceInBDT } from '../../utils/DisplayPriceInBDT';
@@ -13,6 +13,19 @@ const CartModel = ({close}) => {
 
   const { cartProductTotalPrice,cartWithoutDisTotalPrice, savedAmount, cartProductTotalQuantity} = useGlobalContext();
   const cartProduct = useSelector(state => state.cart.cart);
+  const checkUser = useSelector(state => state.user);
+  const navigate = useNavigate();
+
+  const handleProceedToCheckout = () => {
+    if(checkUser?._id){
+      navigate("/proceed");
+      if(close) {
+        close(false);
+      }
+      return;
+    }
+    toast.error("Please login to proceed to checkout");
+  }
 
   return (
     <section
@@ -35,13 +48,13 @@ const CartModel = ({close}) => {
             <div className='min-h-[56vh] max-h-[calc(100vh-210px)] h-full overflow-auto p-2'>
               {
                 cartProduct[0] ? (
-                    <div className='grid gap-1 bg-white rounded-lg p-2'>
+                    <div key={cartProduct+"cartProduct"} className='grid gap-1 bg-white rounded-lg p-2'>
                     {
                       cartProduct[0] && (
                         cartProduct.map((product,index) => {
                           return (
                             <>
-                              <div key={index} className='border border-gray-200 rounded p-3 flex items-center gap-3'>
+                              <div key={index+product?.productId._id+"cartProduct"} className='border border-gray-200 rounded p-3 flex items-center gap-3'>
                                 <div className='w-18 h-18 min-h-18 min-w-18'>
                                   <img
                                     src={product?.productId.image[0]}
@@ -110,8 +123,7 @@ const CartModel = ({close}) => {
                   <span>Grand Total:</span>
                   <span className='font-semibold'>{DisplayPriceInBDT(cartProductTotalPrice)}</span>
                 </div>
-                
-                <button className='text-white bg-blue-500 p-2 rounded-full hover:bg-blue-600 transition-colors duration-300'>
+                <button onClick={handleProceedToCheckout} className='text-white bg-blue-500 p-2 rounded-full hover:bg-blue-600 transition-colors duration-300'>
                   Proceed to Checkout
                 </button>
                 </div>
