@@ -14,6 +14,7 @@ import { useState } from "react";
 import UserMenu from "./userMenu";
 import { DisplayPriceInBDT } from "../utils/DisplayPriceInBDT";
 import { useGlobalContext } from "../contexts/GlobalContext";
+import CartModel from "./DesignModel/CartModel";
 
 
 const Header = () => {
@@ -27,6 +28,7 @@ const Header = () => {
   const user = useSelector((state) => state?.user);
 
   const [openUserMenu, setOpenUserMenu] = useState(false);
+  const [openCartModel, setOpenCartModel] = useState(false);
 
   const {cartProductTotalPrice, cartProductTotalQuantity, cartProduct} = useGlobalContext();
 
@@ -37,7 +39,7 @@ const Header = () => {
 
   const handleCloseUserMenu = ()=>{
     setOpenUserMenu(false)
-}
+  }
 
   //handle mobile user icon click
   const handleMobileUsers = () => {
@@ -126,7 +128,10 @@ const Header = () => {
                     }
                     
                     
-              <button className="flex items-center gap-2 bg-[#098dff] hover:bg-[#1477cd] px-4 py-2 rounded-lg text-white">
+              <button
+              onClick={() => setOpenCartModel(true)}
+              className="flex items-center gap-2 bg-[#098dff] hover:bg-[#1477cd] px-4 py-2 rounded-lg text-white">
+
                     {/**cart icon */}
                 <div className="animate-pulse ">
                   <PiShoppingCartFill size={20}/>
@@ -147,6 +152,8 @@ const Header = () => {
 
               </button>
 
+              
+
             </div>
 
           </div>
@@ -158,6 +165,11 @@ const Header = () => {
       <div className="container mx-auto px-2 lg:hidden">
         <Search />
       </div>
+
+      {openCartModel && (
+        <CartModel close={setOpenCartModel}/>
+      )}
+
     </header>
   );
 };

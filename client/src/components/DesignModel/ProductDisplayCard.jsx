@@ -3,11 +3,6 @@ import { DisplayPriceInBDT } from "../../utils/DisplayPriceInBDT";
 import { URLvalidation } from "../../utils/URLValidation";
 import { Link } from "react-router-dom";
 import { calculatePriceWithDiscount } from "../../utils/calculatePriceWithDiscount";
-import Axios from "../../utils/Axios";
-import AxiosToastError from "../../utils/AxioxToastError";
-import SummaryApi from "../../common/SummaryApi";
-import toast from "react-hot-toast";
-import { useGlobalContext } from "../../contexts/GlobalContext";
 import AddToCartButton from "./AddToCartButton";
 
 const ProductDisplayCard = ({ productData }) => {
@@ -69,7 +64,7 @@ const ProductDisplayCard = ({ productData }) => {
           <div className="w-full">
             {
               productData?.stock > 0 ? (
-                <AddToCartButton productData={productData} />
+                <AddToCartButton productData={productData} iconSize={20} className="px-2 py-1" />
               ) :
               (
                 <div className="text-sm text-red-500 text-center">

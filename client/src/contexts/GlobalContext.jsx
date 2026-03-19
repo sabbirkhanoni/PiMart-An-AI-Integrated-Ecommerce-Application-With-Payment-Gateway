@@ -16,7 +16,8 @@ const GlobalContexts = ({children}) => {
     const dispatch = useDispatch();
 
     const cartProduct = useSelector(state => state?.cart?.cart);
-
+    const [cartWithoutDisTotalPrice, setCartWithoutDisTotalPrice] = useState(0);
+    const [savedAmount, setSavedAmount] = useState(0);
     const [cartProductTotalPrice, setCartProductTotalPrice] = useState(0);
     const [cartProductTotalQuantity, setCartProductTotalQuantity] = useState(0);
 
@@ -95,6 +96,15 @@ const GlobalContexts = ({children}) => {
         return prev + (current.quantity * calculatePriceWithDiscount(current.productId.price, current.productId.discount));
         }, 0);
         setCartProductTotalPrice(totalPrice);
+
+        const withoutDiscountPrice = cartProduct.reduce((prev, current) => {
+        return prev + (current.quantity * current.productId.price);
+        }, 0);
+        setCartWithoutDisTotalPrice(withoutDiscountPrice);
+
+        const saved = withoutDiscountPrice - totalPrice;
+        setSavedAmount(saved);
+
   }, [cartProduct])
 
     return (
@@ -104,7 +114,9 @@ const GlobalContexts = ({children}) => {
                 removeCartProduct,
                 cartProductTotalPrice,
                 cartProductTotalQuantity,
-                cartProduct
+                cartProduct,
+                cartWithoutDisTotalPrice,
+                savedAmount
         }}>
             {children}
         </GlobalContext.Provider>

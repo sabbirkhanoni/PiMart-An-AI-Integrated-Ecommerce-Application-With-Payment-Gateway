@@ -18,6 +18,7 @@ import AxiosToastError from "./utils/AxioxToastError";
 import GlobalContexts from "./contexts/GlobalContext";
 import { FaShoppingCart } from "react-icons/fa";
 import CartDesignMobileView from "./components/DesignModel/CartDesignMobileView";
+import SaveAmount from "./components/Mini/SaveAmount";
 
 function App() {
   const dispatch = useDispatch();
@@ -97,6 +98,7 @@ function App() {
         }}
       />
       <CartDesignMobileView />
+      <SaveAmount />
     </GlobalContexts>
   );
 }

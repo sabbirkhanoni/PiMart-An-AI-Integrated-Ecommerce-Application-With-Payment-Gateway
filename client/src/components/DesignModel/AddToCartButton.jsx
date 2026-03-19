@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { FaMinusCircle } from "react-icons/fa";
 import { FaPlusCircle } from "react-icons/fa";
 
-const AddToCartButton = ({ productData }) => {
+const AddToCartButton = ({ productData, iconSize, className}) => {
 
   const { fetchCartProducts, increaseAndDecreaseQuantityToCartProduct, removeCartProduct } = useGlobalContext();
 
@@ -81,17 +81,17 @@ const AddToCartButton = ({ productData }) => {
     <div className='w-full rounded-full flex items-center justify-center'>
       {
         checkingCart ? (
-          <div className='flex w-full rounded-full py-[4px] items-center justify-between px-5 bg-orange-500'>
+          <div className={`flex w-full rounded-full items-center justify-between bg-orange-500 ${className}`}>
             <button
               onClick={handleDecreaseCartProductQuantity}
-              className='text-white font-bold rounded-full w-6 h-6 flex items-center justify-center cursor-pointer hover:bg-gray-400 transition-all duration-300'>
-              <FaMinusCircle size={20} />
+              className={`text-white font-bold rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-400 transition-all duration-300`}>
+              <FaMinusCircle size={iconSize} />
             </button>
             <span className='text-white'>{cartProductQuantity}</span>
             <button
               onClick={handleIncreaseCartProductQuantity}
-              className='text-white font-bold rounded-full w-6 h-6 flex items-center justify-center cursor-pointer hover:bg-gray-400 transition-all duration-300'>
-              <FaPlusCircle size={20} />
+              className='text-white font-bold rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-400 transition-all duration-300'>
+              <FaPlusCircle size={iconSize} />
             </button>
           </div>
         ) : (
