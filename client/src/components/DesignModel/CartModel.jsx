@@ -14,6 +14,11 @@ const CartModel = ({close}) => {
   const { cartProductTotalPrice,cartWithoutDisTotalPrice, savedAmount, cartProductTotalQuantity} = useGlobalContext();
   const cartProduct = useSelector(state => state.cart.cart);
   const checkUser = useSelector(state => state.user);
+  
+
+
+
+
   const navigate = useNavigate();
 
   const handleProceedToCheckout = () => {
@@ -45,7 +50,7 @@ const CartModel = ({close}) => {
             </div>
 
 
-            <div className='min-h-[56vh] max-h-[calc(100vh-210px)] h-full overflow-auto p-2'>
+            <div className='min-h-[52vh] md:min-h-[54vh] lg:min-h-[56vh] max-h-[calc(100vh-210px)] h-full overflow-auto p-2'>
               {
                 cartProduct[0] ? (
                     <div key={cartProduct+"cartProduct"} className='grid gap-1 bg-white rounded-lg p-2'>

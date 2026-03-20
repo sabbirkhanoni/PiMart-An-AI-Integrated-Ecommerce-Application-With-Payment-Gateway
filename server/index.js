@@ -13,6 +13,7 @@ import uploadImageRouter from './route/uploadImage.route.js';
 import subCategoryRouter from './route/subCategory.route.js';
 import productRouter from './route/product.route.js';
 import cartRouter from './route/cart.route.js';
+import deliveryAddressRouter from './route/deliveryAddress.route.js';
 
 dotenv.config();
 
@@ -48,6 +49,8 @@ app.use('/api/subcategory', subCategoryRouter);
 app.use('/api/product', productRouter);
 //use cart.route.js which basically use AddProductToCartController(cart.controller.js)
 app.use('/api/cart', cartRouter);
+//use deliveryAddress.route.js which basically use addDeliveryAddress(deliveryAddress.controller.js)
+app.use('/api/address', deliveryAddressRouter);
 
 
 //before starting the server, connect to the database
