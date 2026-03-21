@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import "./App.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -15,9 +15,14 @@ import {
 } from "./store/productSlice";
 import Axios from "./utils/Axios";
 import AxiosToastError from "./utils/AxioxToastError";
+import GlobalContexts from "./contexts/GlobalContext";
+import { FaShoppingCart } from "react-icons/fa";
+import CartDesignMobileView from "./components/DesignModel/CartDesignMobileView";
+import SaveAmount from "./components/Mini/SaveAmount";
 
 function App() {
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const fetchUser = async () => {
     const userData = await fetchUserDetails();
@@ -63,6 +68,8 @@ function App() {
     }
   };
 
+  
+
   useEffect(() => {
     fetchUser();
     fetchAllCategories();
@@ -70,7 +77,7 @@ function App() {
   }, []);
 
   return (
-    <>
+    <GlobalContexts>
       <Header />
       <main className="min-h-[78vh] lg:px-5 lg:pb-5">
         <Outlet />
@@ -91,7 +98,17 @@ function App() {
           },
         }}
       />
-    </>
+      
+      {
+        (location.pathname !== "/proceed" && location.pathname !== "/cart") && (
+          <>
+            <SaveAmount />
+            <CartDesignMobileView />
+          </>
+        )
+      }
+      
+    </GlobalContexts>
   );
 }
 

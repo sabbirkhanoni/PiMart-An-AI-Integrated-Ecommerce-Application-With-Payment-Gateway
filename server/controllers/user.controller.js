@@ -215,6 +215,8 @@ export async function logoutController(request,response) {
         const userid = request.userId; //which is coming form middleware
         //clear accessToken and refreshToken from cookie when user logout
         //but before clear create cookieOption as you create when login
+
+        console.log("userId in logout controller", userid)
     
         const cookieOption = {
             httpOnly : true,

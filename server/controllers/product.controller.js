@@ -303,7 +303,7 @@ export const GetProductBySearchController = async (request, response) => {
       limit = 10;
     }
 
-    const query = search ? {
+    const query = search  && search.trim() !== "" ? {
         $text: {
           $search: search,
         },

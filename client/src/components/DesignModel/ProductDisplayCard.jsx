@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { DisplayPriceInBDT } from "../../utils/DisplayPriceInBDT";
 import { URLvalidation } from "../../utils/URLValidation";
 import { Link } from "react-router-dom";
 import { calculatePriceWithDiscount } from "../../utils/calculatePriceWithDiscount";
+import AddToCartButton from "./AddToCartButton";
 
 const ProductDisplayCard = ({ productData }) => {
+
+  const [loading, setLoading] = useState(false);
+
   const URL = `/product/${URLvalidation(productData?.name)}-${URLvalidation(
     productData?._id
   )}`;
+
+
   return (
     <Link to={URL}>
       <div className="lg:h-[400px] w-[175px] h-[310px] lg:w-[350px] border border-gray-200 p-2 lg:p-4 lg:space-y-3 grid max-w-58 rounded shadow-lg overflow-hidden hover:shadow-lg">
@@ -58,9 +64,7 @@ const ProductDisplayCard = ({ productData }) => {
           <div className="w-full">
             {
               productData?.stock > 0 ? (
-                <button className="bg-blue-500 text-white p-1 px-4 lg:px-6 w-full rounded-full hover:bg-blue-600 transition-all duration-300">
-                  Cart
-                </button>
+                <AddToCartButton productData={productData} iconSize={20} className="px-2 py-1" />
               ) :
               (
                 <div className="text-sm text-red-500 text-center">

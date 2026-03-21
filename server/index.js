@@ -12,6 +12,8 @@ import categoryRouter from './route/category.route.js';
 import uploadImageRouter from './route/uploadImage.route.js';
 import subCategoryRouter from './route/subCategory.route.js';
 import productRouter from './route/product.route.js';
+import cartRouter from './route/cart.route.js';
+import deliveryAddressRouter from './route/deliveryAddress.route.js';
 
 dotenv.config();
 
@@ -35,7 +37,6 @@ app.get("/", (request, response) => {
     response.json({ message: "Hello from server! Server is Running" + PORT });
 });
 
-
 //use user.route.js which basically use registerUserController(user.controller.js)
 app.use('/api/user',userRouter);
 //use category.route.js which basically use UploadCategoryController(category.controller.js)
@@ -46,6 +47,10 @@ app.use('/api/file', uploadImageRouter);
 app.use('/api/subcategory', subCategoryRouter);
 //use product.route.js which basically use AddProductController(product.controller.js)
 app.use('/api/product', productRouter);
+//use cart.route.js which basically use AddProductToCartController(cart.controller.js)
+app.use('/api/cart', cartRouter);
+//use deliveryAddress.route.js which basically use addDeliveryAddress(deliveryAddress.controller.js)
+app.use('/api/delivery-address', deliveryAddressRouter);
 
 
 //before starting the server, connect to the database

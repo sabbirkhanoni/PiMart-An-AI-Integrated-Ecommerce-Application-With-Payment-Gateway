@@ -19,6 +19,8 @@ import ProductPage from "../pages/ProductAdminPage";
 import AdminPermission from "../layouts/AdminPermission";
 import CategoryWiseProductList from "../pages/CategoryWiseProductList";
 import ProductDetailsDisplayPage from "../pages/ProductDetailsDisplayPage";
+import CartModel from "../components/DesignModel/CartModel";
+import ProceedPage from "../pages/ProceedPage";
 
 const router = createBrowserRouter([
   {
@@ -120,6 +122,14 @@ const router = createBrowserRouter([
         path: "/product/:product-details",
         element: <ProductDetailsDisplayPage />,
       },
+      {
+        path: "/cart",
+        element: <CartModel />,
+      },
+      {
+        path: "proceed",
+        element: <ProceedPage />
+      }
     ],
   },
 ]);

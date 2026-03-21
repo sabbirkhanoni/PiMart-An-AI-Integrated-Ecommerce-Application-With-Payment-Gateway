@@ -3,20 +3,20 @@ import mongoose from "mongoose";
 
 
 const addressSchema = new mongoose.Schema({
-    address_line : {
+    homeName : {
         type: String,
         default: ""
+    },
+    roadName : {
+        type: String,
+        default: ""
+    },
+    zipCode : {
+        type: String,
     },
     city : {
         type: String,
         default: ""
-    },
-    state : {
-        type: String,
-        default: ""
-    },
-    pincode : {
-        type: String,
     },
     country : {
         type: String,
