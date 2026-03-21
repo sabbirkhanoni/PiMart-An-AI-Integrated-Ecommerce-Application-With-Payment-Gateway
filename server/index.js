@@ -50,7 +50,7 @@ app.use('/api/product', productRouter);
 //use cart.route.js which basically use AddProductToCartController(cart.controller.js)
 app.use('/api/cart', cartRouter);
 //use deliveryAddress.route.js which basically use addDeliveryAddress(deliveryAddress.controller.js)
-app.use('/api/address', deliveryAddressRouter);
+app.use('/api/delivery-address', deliveryAddressRouter);
 
 
 //before starting the server, connect to the database

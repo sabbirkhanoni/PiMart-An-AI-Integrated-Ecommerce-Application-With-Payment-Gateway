@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
+import Axios from '../../utils/Axios';
+import SummaryApi from '../../common/SummaryApi';
+import AxiosToastError from '../../utils/AxioxToastError';
+import toast from 'react-hot-toast';
 
-const AddressForm = () => {
+const AddressForm = ({close}) => {
 
     const [addressData, setAddressData] = useState({
         homeName: "",
@@ -11,17 +15,35 @@ const AddressForm = () => {
         mobile: ""
     });
 
-    const handleOnSubmit = (e) => {
+    const handleOnSubmit = async (e) => {
         e.preventDefault();
-        console.log(addressData);
-        setAddressData({
-            homeName: "",
-            roadName: "",
-            zipCode: "",
-            city: "",
-            country: "",
-            mobile: ""
+        
+        try {
+            const response = await Axios({
+            ...SummaryApi.addDeliveryAddress,
+            data: addressData
         });
+
+        const { data : responseData } = response;
+
+        if(responseData?.success){
+            toast.success(responseData?.message);
+            if(close) {
+                close();
+            }
+            setAddressData({
+                homeName: "",
+                roadName: "",
+                zipCode: "",
+                city: "",
+                country: "",
+                mobile: ""
+                });
+            
+        }
+        } catch (error) {
+            AxiosToastError(error);
+        }
     }
 
     const handleOnChange = (e) => {
@@ -31,8 +53,6 @@ const AddressForm = () => {
             [name]: value
         }));
     }
-
-    console.log(addressData)
 
   return (
     <section className='fixed bg-neutral-500/40 backdrop-blur-sm top-0 left-0 w-full h-screen z-50 flex items-center justify-center overflow-auto'>
