@@ -100,7 +100,7 @@ function App() {
       />
       
       {
-        (location.pathname !== "/proceed" && location.pathname !== "/cart") && (
+        (location.pathname === "/") && (
           <>
             <SaveAmount />
             <CartDesignMobileView />
