@@ -6,6 +6,7 @@ import { handleAddToCart } from "../store/cart.store";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { calculatePriceWithDiscount } from "../utils/calculatePriceWithDiscount";
+import { handleAddAddress } from "../store/deliveryAddressSlice";
 
 export const GlobalContext = createContext(null)
 
@@ -86,9 +87,25 @@ const GlobalContexts = ({children}) => {
         dispatch(handleAddToCart([]));
     }
 
+    const fetchUserDeliveryAddress = async() => {
+        try {
+            const response = await Axios({
+                ...SummaryApi.getAllDeliveryAddressOfUser
+            })
+            const { data : responseData } =response;
+
+            if(responseData.success) {
+                dispatch(handleAddAddress(responseData.data));
+            }
+        } catch (error) {
+            AxiosToastError(error);
+        }
+    }
+
     useEffect(() => {
         fetchCartProducts();
         handleLogoutCartClear();
+        fetchUserDeliveryAddress();
     }, [user]);
 
 
@@ -118,6 +135,7 @@ const GlobalContexts = ({children}) => {
                 fetchCartProducts,
                 increaseAndDecreaseQuantityToCartProduct,
                 removeCartProduct,
+                fetchUserDeliveryAddress,
                 cartProductTotalPrice,
                 cartProductTotalQuantity,
                 cartProduct,

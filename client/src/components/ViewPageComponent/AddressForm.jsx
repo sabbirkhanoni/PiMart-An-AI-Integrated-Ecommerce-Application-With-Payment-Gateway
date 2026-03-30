@@ -3,8 +3,12 @@ import Axios from '../../utils/Axios';
 import SummaryApi from '../../common/SummaryApi';
 import AxiosToastError from '../../utils/AxioxToastError';
 import toast from 'react-hot-toast';
+import { IoClose } from 'react-icons/io5';
+import { GlobalContext, useGlobalContext } from '../../contexts/GlobalContext';
 
 const AddressForm = ({close}) => {
+
+    const {fetchUserDeliveryAddress} = useGlobalContext();
 
     const [addressData, setAddressData] = useState({
         homeName: "",
@@ -30,6 +34,7 @@ const AddressForm = ({close}) => {
             toast.success(responseData?.message);
             if(close) {
                 close();
+                fetchUserDeliveryAddress();
             }
             setAddressData({
                 homeName: "",
@@ -38,7 +43,7 @@ const AddressForm = ({close}) => {
                 city: "",
                 country: "",
                 mobile: ""
-                });
+            });
             
         }
         } catch (error) {
@@ -57,7 +62,12 @@ const AddressForm = ({close}) => {
   return (
     <section className='fixed bg-neutral-500/40 backdrop-blur-sm top-0 left-0 w-full h-screen z-50 flex items-center justify-center overflow-auto'>
       <div className='bg-white rounded-lg p-2 mx-3 w-full max-w-md'>
-        <h2 className='text-xl font-semibold mb-4'>Delivery Address</h2>
+        <div className='flex items-center justify-between px-2'>
+            <h2 className='text-xl font-semibold mb-4'>Delivery Address</h2>
+            <button>
+                <IoClose onClick={close} size={25} className='bg-blue-400 cursor-pointer rounded-full p-1 hover:bg-blue-600 text-white' />
+            </button>
+        </div>
         <form className='flex flex-col' onSubmit={handleOnSubmit}>
             <div>
                 <label htmlFor='homeName' className='block mb-1 text-gray-600'>Home Name</label>

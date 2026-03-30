@@ -2,7 +2,6 @@ import AddressModel from "../models/address.model.js";
 import UserModel from '../models/user.model.js'
 
 
-
 export const addDeliveryAddress = async(request, response) => {
     
     try {
@@ -15,7 +14,8 @@ export const addDeliveryAddress = async(request, response) => {
             zipCode,
             city,
             country,
-            mobile
+            mobile,
+            userId : userId
         });
 
         console.log("userId", request.userId);
@@ -51,3 +51,26 @@ export const addDeliveryAddress = async(request, response) => {
         });
     }
 }
+
+export const getAllAddressOfUser = async(request, response) => {
+    try {
+        const userId = request.userId;
+
+        const data = await AddressModel.find({ userId: userId }).sort({ createdAt: -1 });
+
+        return response.status(200).json({
+            message: "Delivery address retrieved successfully",
+            error: false,
+            success: true,
+            data: data
+        })
+
+    } catch (error) {
+        response.status(500).json({ 
+            message: error.message || error || "An error occurred while fetching the delivery address",
+            error: "Internal server error",
+            success: false
+        });
+    }
+}
+

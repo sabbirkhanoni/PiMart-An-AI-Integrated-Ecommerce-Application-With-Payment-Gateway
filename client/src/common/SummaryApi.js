@@ -130,6 +130,10 @@ const SummaryApi = {
   addDeliveryAddress: {
     url: "/api/delivery-address/add",
     method: "post"
+  },
+  getAllDeliveryAddressOfUser: {
+    url: "/api/delivery-address/all",
+    method: "get"
   }
 };
 
