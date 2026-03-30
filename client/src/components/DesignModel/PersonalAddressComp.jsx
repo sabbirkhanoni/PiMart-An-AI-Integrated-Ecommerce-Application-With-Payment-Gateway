@@ -1,9 +1,16 @@
-import { MapPinIcon, PhoneIcon } from "lucide-react";
+import { Delete, DeleteIcon, Edit, EditIcon, LucideDelete, MapPinIcon, PhoneIcon } from "lucide-react";
 import React, { useState } from "react";
 import AddressForm from "../ViewPageComponent/AddressForm";
+import { FaDeleteLeft } from "react-icons/fa6";
+import { MdDelete } from "react-icons/md";
+import { CiEdit } from "react-icons/ci";
+import AddressEditForm from "../ViewPageComponent/AddressEditForm";
+
 
 const PersonalAddressComp = ({ address }) => {
   const [openAddressFormModel, setOpenAddressFormModel] = useState(false);
+  const [edit, setEdit] = useState({});
+  const [openEditModel, setOpenEditModel] = useState(false);
 
   return (
     <section className="bg-white">
@@ -13,6 +20,17 @@ const PersonalAddressComp = ({ address }) => {
             <div
               className={`relative overflow-hidden rounded-xl border border-blue-500 "bg-blue-50 shadow-sm "`}
             >
+              <div className="absolute top-0 right-0 flex gap-3 p-4">
+                <button  onClick={() => {
+                  setEdit(address);
+                  setOpenEditModel(true);
+                }}>
+                  <CiEdit size={22} className="text-green-500 cursor-pointer" />
+                </button>
+                <button>
+                  <MdDelete size={22} className="text-red-500 cursor-pointer" />
+                </button>
+              </div>
               <div className="h-[3px] bg-gradient-to-r from-blue-500 to-teal-400" />
               <div className="pl-3 py-2 hover:bg-green-100 hover:border-green-300 transition-colors duration-300">
                 <div className="flex items-center gap-2 mb-1">
@@ -51,6 +69,13 @@ const PersonalAddressComp = ({ address }) => {
             {openAddressFormModel && (
               <AddressForm close={() => setOpenAddressFormModel(false)} />
             )}
+
+            {openEditModel && (
+            <AddressEditForm
+              close={() => setOpenEditModel(false)}
+              editData={edit}
+            />
+          )}
           </div>
         );
       })}

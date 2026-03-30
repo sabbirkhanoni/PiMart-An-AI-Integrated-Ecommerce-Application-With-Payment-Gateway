@@ -74,3 +74,43 @@ export const getAllAddressOfUser = async(request, response) => {
     }
 }
 
+export const EditDeliveryAddressController = async(request, response) => {
+    try {
+        const userId = request.userId;
+        const { _id , homeName, roadName, zipCode, city, country, mobile } = request.body;
+
+        const updateedAddress = await AddressModel.updateOne(
+            { _id: _id, userId: userId },
+            {
+                homeName,
+                roadName,
+                zipCode,
+                city,
+                country,
+                mobile
+            }
+        );
+
+        if(!updateedAddress) {
+            return response.status(404).json({
+                message: "Address not found",
+                error: true,
+                success: false
+            })
+        } else {
+            return response.status(200).json({
+                message: "Delivery address updated successfully",
+                error: false,
+                success: true
+            });
+        }
+        
+    } catch (error) {
+        response.status(500).json({
+            message: error.message,
+            error: true,
+            success: false
+        })
+    }
+}
+

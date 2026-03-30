@@ -134,6 +134,10 @@ const SummaryApi = {
   getAllDeliveryAddressOfUser: {
     url: "/api/delivery-address/all",
     method: "get"
+  },
+  editDeliveryAddress: {
+    url: "/api/delivery-address/edit",
+    method: "put"
   }
 };
 

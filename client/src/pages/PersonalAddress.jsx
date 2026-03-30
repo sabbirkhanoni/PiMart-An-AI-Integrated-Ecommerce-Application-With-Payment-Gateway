@@ -9,11 +9,6 @@ const PersonalAddress = () => {
       (state) => state?.deliveryAddress?.address,
     );
 
-  useEffect(() => {
-    console.log("deliveryAddress", deliveryAddress);
-  }, [deliveryAddress]);
-  console.log("deliveryAddress", deliveryAddress);
-
   return (
     <section>
       <PersonalAddressComp address={deliveryAddress}/>

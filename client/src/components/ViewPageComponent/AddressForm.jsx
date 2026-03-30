@@ -44,7 +44,6 @@ const AddressForm = ({close}) => {
                 country: "",
                 mobile: ""
             });
-            
         }
         } catch (error) {
             AxiosToastError(error);
