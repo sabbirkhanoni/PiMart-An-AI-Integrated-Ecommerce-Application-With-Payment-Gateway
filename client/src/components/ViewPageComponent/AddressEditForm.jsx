@@ -48,10 +48,7 @@ const AddressEditForm = ({ close, editData }) => {
         }
     }
 
-    const handleDeleteAddress = async () => {
-
-    }
-
+    
     const handleOnChange = (e) => {
         const { name, value } = e.target;
         setAddressData((prevData) => ({

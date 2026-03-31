@@ -114,3 +114,37 @@ export const EditDeliveryAddressController = async(request, response) => {
     }
 }
 
+export const DeleteAddressController = async(request, response) => {
+    try {
+        const userId = request.userId;
+        const { _id } = request.body;
+
+        const deletedAddress = await AddressModel.deleteOne({
+            _id: _id,
+            userId: userId
+        })
+
+        if(!deletedAddress) {
+            return response.status(400).json({
+                message: "Address not found",
+                error: true,
+                success: false
+            })
+        } else {
+            return response.status(200).json({
+                message: "Delivery address deleted successfully",
+                error: false,
+                success: true,
+                data: deletedAddress
+            });
+        }
+
+    } catch (error) {
+        response.status(500).json({
+            message: error.message,
+            error: true,
+            success: false
+        })
+    }
+}
+

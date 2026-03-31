@@ -138,6 +138,10 @@ const SummaryApi = {
   editDeliveryAddress: {
     url: "/api/delivery-address/edit",
     method: "put"
+  },
+  deleteDeliveryAddress: {
+    url: "/api/delivery-address/delete",
+    method: "delete"
   }
 };
 

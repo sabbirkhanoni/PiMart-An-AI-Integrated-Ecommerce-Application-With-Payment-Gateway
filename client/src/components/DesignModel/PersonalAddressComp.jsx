@@ -1,16 +1,51 @@
-import { Delete, DeleteIcon, Edit, EditIcon, LucideDelete, MapPinIcon, PhoneIcon } from "lucide-react";
+import {
+  Delete,
+  DeleteIcon,
+  Edit,
+  EditIcon,
+  LucideDelete,
+  MapPinIcon,
+  PhoneIcon,
+} from "lucide-react";
 import React, { useState } from "react";
 import AddressForm from "../ViewPageComponent/AddressForm";
 import { FaDeleteLeft } from "react-icons/fa6";
 import { MdDelete } from "react-icons/md";
 import { CiEdit } from "react-icons/ci";
 import AddressEditForm from "../ViewPageComponent/AddressEditForm";
+import AxiosToastError from "../../utils/AxioxToastError";
+import { useGlobalContext } from "../../contexts/GlobalContext";
+import Axios from "../../utils/Axios";
+import SummaryApi from "../../common/SummaryApi";
+import toast from "react-hot-toast";
+
 
 
 const PersonalAddressComp = ({ address }) => {
   const [openAddressFormModel, setOpenAddressFormModel] = useState(false);
   const [edit, setEdit] = useState({});
   const [openEditModel, setOpenEditModel] = useState(false);
+  const { fetchUserDeliveryAddress } = useGlobalContext();
+
+  const handleDeleteAddress = async (_id) => {
+    try {
+      const response = await Axios({
+        ...SummaryApi.deleteDeliveryAddress,
+        data: {
+          _id: _id,
+        },
+      });
+      const { data: responseData } = response;
+
+      if (responseData.success) {
+        toast.success(responseData.message);
+        fetchUserDeliveryAddress();
+        close();
+      }
+    } catch (error) {
+      AxiosToastError(error);
+    }
+  };
 
   return (
     <section className="bg-white">
@@ -21,13 +56,19 @@ const PersonalAddressComp = ({ address }) => {
               className={`relative overflow-hidden rounded-xl border border-blue-500 "bg-blue-50 shadow-sm "`}
             >
               <div className="absolute top-0 right-0 flex gap-3 p-4">
-                <button  onClick={() => {
-                  setEdit(address);
-                  setOpenEditModel(true);
-                }}>
+                <button
+                  onClick={() => {
+                    setEdit(address);
+                    setOpenEditModel(true);
+                  }}
+                >
                   <CiEdit size={22} className="text-green-500 cursor-pointer" />
                 </button>
-                <button>
+                <button
+                  onClick={() => {
+                    handleDeleteAddress(address._id);
+                  }}
+                >
                   <MdDelete size={22} className="text-red-500 cursor-pointer" />
                 </button>
               </div>
@@ -71,11 +112,11 @@ const PersonalAddressComp = ({ address }) => {
             )}
 
             {openEditModel && (
-            <AddressEditForm
-              close={() => setOpenEditModel(false)}
-              editData={edit}
-            />
-          )}
+              <AddressEditForm
+                close={() => setOpenEditModel(false)}
+                editData={edit}
+              />
+            )}
           </div>
         );
       })}
