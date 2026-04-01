@@ -5,6 +5,10 @@ import { useNavigate } from "react-router-dom";
 import AddressForm from "../components/ViewPageComponent/AddressForm";
 import { useSelector } from "react-redux";
 import AddressCard from "../components/DesignModel/AddressCard";
+import AxiosToastError from "../utils/AxioxToastError";
+import Axios from "../utils/Axios";
+import SummaryApi from "../common/SummaryApi";
+import toast from "react-hot-toast";
 
 const ProceedPage = () => {
   const {
@@ -12,6 +16,7 @@ const ProceedPage = () => {
     cartWithoutDisTotalPrice,
     savedAmount,
     cartProductTotalQuantity,
+    fetchCartProducts
   } = useGlobalContext();
 
   const [selectedAddress, setSelectedAddress] = useState(0);
@@ -19,6 +24,35 @@ const ProceedPage = () => {
   const deliveryAddress = useSelector(
     (state) => state?.deliveryAddress?.address,
   );
+  const navigate = useNavigate();
+  const cartProducts = useSelector((state) => state?.cart?.cart);
+
+  const handleCashOnDelivery = async() => {
+    try {
+      const response = await Axios({
+        ...SummaryApi.cashOnDeliveryPayment,
+        data: {
+          list_item: cartProducts ,
+          addressId: deliveryAddress[selectedAddress]?._id,
+          subTotalAmt : cartWithoutDisTotalPrice,
+          totalAmt : cartProductTotalPrice
+        }
+      })
+
+      const { data : responseData } = response
+
+      if(responseData?.success){
+        toast.success(responseData?.message || "Cash on delivery successful.")
+        if(fetchCartProducts) {
+          fetchCartProducts();
+        }
+        navigate("/complete");
+      }
+
+    } catch (error) {
+      AxiosToastError(error)
+    }
+  }
   
   return (
     <section className="bg-white">
@@ -88,7 +122,7 @@ const ProceedPage = () => {
                 </span>
               </div>
               <div className="grid grid-cols-2 items-center justify-center gap-4 mt-2 pb-4">
-                <button className="text-white bg-cyan-800 cursor-pointer p-2 rounded-full hover:bg-green-600 transition-colors duration-300">
+                <button onClick={handleCashOnDelivery} className="text-white bg-cyan-800 cursor-pointer p-2 rounded-full hover:bg-green-600 transition-colors duration-300">
                   Cash on Delivery
                 </button>
                 <button className="text-white bg-blue-500 cursor-pointer p-2 rounded-full hover:bg-green-600 transition-colors duration-300">

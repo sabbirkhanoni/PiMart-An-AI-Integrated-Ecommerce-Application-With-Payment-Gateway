@@ -142,6 +142,10 @@ const SummaryApi = {
   deleteDeliveryAddress: {
     url: "/api/delivery-address/delete",
     method: "delete"
+  },
+  cashOnDeliveryPayment: {
+    url: "/api/order/cash-on-delivery-payment",
+    method: "post"
   }
 };
 

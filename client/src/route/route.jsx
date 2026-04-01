@@ -21,6 +21,7 @@ import CategoryWiseProductList from "../pages/CategoryWiseProductList";
 import ProductDetailsDisplayPage from "../pages/ProductDetailsDisplayPage";
 import CartModel from "../components/DesignModel/CartModel";
 import ProceedPage from "../pages/ProceedPage";
+import Complete from "../pages/Complete";
 
 const router = createBrowserRouter([
   {
@@ -129,6 +130,14 @@ const router = createBrowserRouter([
       {
         path: "proceed",
         element: <ProceedPage />
+      },
+      {
+        path: "complete",
+        element: <Complete />
+      },
+      {
+        path: "failed",
+        element: <Failed />
       }
     ],
   },
