@@ -46,7 +46,18 @@ const ProceedPage = () => {
         if(fetchCartProducts) {
           fetchCartProducts();
         }
-        navigate("/complete");
+        navigate("/complete",{
+          state: {
+            text: "Order Placed Successfully",
+          }
+        });
+      } else {
+        toast.error(responseData?.message || "Cash on delivery failed.")
+        navigate("/failed",{
+          state: {
+            text: responseData?.message || "Cash on delivery failed.",
+          }
+        });
       }
 
     } catch (error) {

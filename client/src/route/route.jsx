@@ -22,6 +22,7 @@ import ProductDetailsDisplayPage from "../pages/ProductDetailsDisplayPage";
 import CartModel from "../components/DesignModel/CartModel";
 import ProceedPage from "../pages/ProceedPage";
 import Complete from "../pages/Complete";
+import Failed from "../pages/Failed";
 
 const router = createBrowserRouter([
   {
