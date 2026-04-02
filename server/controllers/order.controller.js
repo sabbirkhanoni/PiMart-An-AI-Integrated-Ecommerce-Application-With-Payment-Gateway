@@ -116,54 +116,72 @@ export const StripePaymentController = async (request, response) => {
     }
 }
 
+
+
+
+//from Stripe webhook Docs : https://docs.stripe.com/webhooks
+//More Exception Handling and Loging Version of ReceiveWebHookFromStripeController
 export const ReceiveWebHookFromStripeController = async (request, response) => {
-    // From Stripe webhook Docs : https://docs.stripe.com/webhooks
-        let event;
-        const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET_KEY;
-        if (endpointSecret) {
-            // Get the signature sent by Stripe
-            const signature = request.headers['stripe-signature'];
-            try {
-            event = stripe.webhooks.constructEvent(
-                request.body,
-                signature,
-                endpointSecret
-            );
-            } catch (err) {
-            console.log(`⚠️ Webhook signature verification failed.`, err.message);
-            return response.sendStatus(400);
-            }
+    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET_KEY;
+    let event;
 
-        // Handle the event
-        switch (event.type) {
-            case 'payment_intent.succeeded':
-            const paymentIntent = event.data.object;
-            // Then define and call a method to handle the successful payment intent.
-            // handlePaymentIntentSucceeded(paymentIntent);
-            const line_items = await Stripe.checkout.sessions.listLineItems(paymentIntent.id);
-            const userId = paymentIntent.metadata.userId;
-            const addressId = paymentIntent.metadata.addressId;
-            const orderedProducts = await getAllOrderedProducts({
-                line_items : line_items,
-                userId : userId,
-                addressId : addressId,
-                paymentId : paymentIntent.payment_intent,
-                payment_status : paymentIntent.payment_status,
-            });
-
-            const createOrder = await OrderModel.insertMany(orderedProducts);
-            if(createOrder) {
-                const updateUserModel = await UserModel.findByIdAndUpdate(userId, { shopping_cart: [] });
-                const deleteCartProducts = await CartProductModel.deleteMany({ userId: userId });
-            }
-
-            break;
-            // ... handle other event types
-            default:
-            console.log(`Unhandled event type ${event.type}`);
+    try {
+        const signature = request.headers['stripe-signature'];
+        const rawBody = request.body; // express.raw middleware must be applied before express.json
+        if (!endpointSecret) {
+            console.error('Missing STRIPE_WEBHOOK_SECRET_KEY');
+            return response.status(500).send('Webhook secret not configured');
         }
 
-        // Return a response to acknowledge receipt of the event
-        response.json({received: true});
+        event = Stripe.webhooks.constructEvent(rawBody, signature, endpointSecret);
+    } catch (err) {
+        console.log('⚠️ Webhook signature verification failed.', err.message);
+        return response.status(400).send(`Webhook Error: ${err.message}`);
     }
-}
+
+    try {
+        // Handle only safe event types here. Use session.id for listLineItems.
+        switch (event.type) {
+            case 'checkout.session.completed': {
+                const session = event.data.object; // checkout session object
+                try {
+                    const line_items = await Stripe.checkout.sessions.listLineItems(session.id, { limit: 100 });
+                    const userId = session.metadata?.userId;
+                    const addressId = session.metadata?.addressId;
+                    const paymentId = session.payment_intent || session.id;
+                    const payment_status = session.payment_status || 'paid';
+
+                    const orderedProducts = await getAllOrderedProducts({
+                        line_items,
+                        userId,
+                        addressId,
+                        paymentId,
+                        payment_status,
+                    });
+
+                    if (orderedProducts && orderedProducts.length) {
+                        await OrderModel.insertMany(orderedProducts);
+                        await UserModel.findByIdAndUpdate(userId, { shopping_cart: [] });
+                        await CartProductModel.deleteMany({ userId });
+                    }
+
+                    console.log('Processed checkout.session.completed for session:', session.id);
+                } catch (err) {
+                    console.error('Error processing checkout.session.completed:', err);
+                    // don't throw — return 200 so Stripe doesn't keep retrying forever or crash server
+                }
+                break;
+            }
+
+            // Optional: just log other events; avoid using payment intent id to fetch session without mapping
+            default:
+                console.log(`Unhandled event type ${event.type}`);
+        }
+
+        return response.json({ received: true });
+    } catch (err) {
+        console.error('Error handling webhook event:', err);
+        return response.status(500).send('Server error');
+    }
+};
+

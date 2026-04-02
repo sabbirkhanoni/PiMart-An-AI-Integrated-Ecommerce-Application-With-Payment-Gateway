@@ -19,6 +19,9 @@ import orderRouter from './route/order.route.js';
 dotenv.config();
 
 const app = express();
+
+app.use('/api/order/webhook', express.raw({ type: 'application/json' }));
+
 app.use(cors({
     credentials: true,
     origin: process.env.FRONTEND_URL,
