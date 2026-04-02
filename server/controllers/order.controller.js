@@ -153,8 +153,8 @@ export const ReceiveWebHookFromStripeController = async (request, response) => {
 
             const createOrder = await OrderModel.insertMany(orderedProducts);
             if(createOrder) {
-                const deleteCartProducts = await CartProductModel.deleteMany({ userId: userId });
                 const updateUserModel = await UserModel.findByIdAndUpdate(userId, { shopping_cart: [] });
+                const deleteCartProducts = await CartProductModel.deleteMany({ userId: userId });
             }
 
             break;
