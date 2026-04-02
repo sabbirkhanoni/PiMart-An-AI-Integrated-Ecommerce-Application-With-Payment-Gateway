@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import CartProductModel from '../models/cartproduct.model.js';
 import { calculatePriceWithDiscount } from '../utils/calculatePriceWithDiscount.js';
 import Stripe from '../config/paymentGatewayStripe.js';
+import {getAllOrderedProducts} from '../utils/getAllOrderedProducts.js';
 
 export const CashOnDeliveryPaymentController = async (request, response) => {
     try {
@@ -55,6 +56,14 @@ export const StripePaymentController = async (request, response) => {
         const userId = request.userId;
         const { list_item, addressId, subTotalAmt, totalAmt, paymentId } = request.body;
 
+        if(!list_item || list_item.length === 0) {
+            return response.status(400).json({
+                success: false,
+                error: true,
+                message: "Please Select at least One Product to proceed."
+            })
+        }
+
         //get User Of this UserId
         const user = await UserModel.findById(userId);
 
@@ -63,8 +72,8 @@ export const StripePaymentController = async (request, response) => {
                 price_data: {
                     currency: 'usd',
                     product_data: {
-                        name: item.productId.name,
-                        images: [item.productId.image],
+                        name: item.productId.name || "Product",
+                        images: item.productId.image,
                         metadata : {
                             productId: item.productId._id,
                         }
@@ -90,15 +99,12 @@ export const StripePaymentController = async (request, response) => {
                 orderId: `ORD-${new mongoose.Types.ObjectId()}`,
                 addressId: addressId,
             },
-            success_url: `${process.env.CLIENT_URL}/complete`,
-            cancel_url: `${process.env.CLIENT_URL}/failed`,
+            success_url: `${process.env.FRONTEND_URL}/complete`,
+            cancel_url: `${process.env.FRONTEND_URL}/failed`,
         })
 
-        return response.status(303).json({
-            success: true,
-            error: false,
-            message: "Stripe checkout session created successfully.",
-            session : session
+       return response.status(200).json({
+            url: session.url
         })
 
     } catch (error) {
@@ -107,5 +113,50 @@ export const StripePaymentController = async (request, response) => {
             error: true,
             message: error.message || error || 'An error occurred while processing the order.'
         })
+    }
+}
+
+export const ReceiveWebHookFromStripeController = async (request, response) => {
+    // From Stripe webhook Docs : https://docs.stripe.com/webhooks
+        let event;
+        const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET_KEY;
+        if (endpointSecret) {
+            // Get the signature sent by Stripe
+            const signature = request.headers['stripe-signature'];
+            try {
+            event = stripe.webhooks.constructEvent(
+                request.body,
+                signature,
+                endpointSecret
+            );
+            } catch (err) {
+            console.log(`⚠️ Webhook signature verification failed.`, err.message);
+            return response.sendStatus(400);
+            }
+
+        // Handle the event
+        switch (event.type) {
+            case 'payment_intent.succeeded':
+            const paymentIntent = event.data.object;
+            // Then define and call a method to handle the successful payment intent.
+            // handlePaymentIntentSucceeded(paymentIntent);
+            const line_items = await Stripe.checkout.sessions.listLineItems(paymentIntent.id);
+            const userId = paymentIntent.metadata.userId;
+            const orderedProducts = await getAllOrderedProducts(line_items, userId);
+
+            const createOrder = await OrderModel.insertMany(orderedProducts);
+            if(createOrder) {
+                const deleteCartProducts = await CartProductModel.deleteMany({ userId: userId });
+                const updateUserModel = await UserModel.findByIdAndUpdate(userId, { shopping_cart: [] });
+            }
+
+            break;
+            // ... handle other event types
+            default:
+            console.log(`Unhandled event type ${event.type}`);
+        }
+
+        // Return a response to acknowledge receipt of the event
+        response.json({received: true});
     }
 }

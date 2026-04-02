@@ -139,6 +139,10 @@ const SummaryApi = {
     url: "/api/delivery-address/edit",
     method: "put"
   },
+  stripePaymentGateway: {
+    url: "/api/order/stripe-payment",
+    method: "post"
+  },
   deleteDeliveryAddress: {
     url: "/api/delivery-address/delete",
     method: "delete"

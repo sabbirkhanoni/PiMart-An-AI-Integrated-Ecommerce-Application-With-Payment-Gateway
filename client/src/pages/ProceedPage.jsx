@@ -9,7 +9,8 @@ import AxiosToastError from "../utils/AxioxToastError";
 import Axios from "../utils/Axios";
 import SummaryApi from "../common/SummaryApi";
 import toast from "react-hot-toast";
-
+import { loadStripe } from '@stripe/stripe-js';
+import { HiCurrencyDollar } from "react-icons/hi";
 const ProceedPage = () => {
   const {
     cartProductTotalPrice,
@@ -61,6 +62,34 @@ const ProceedPage = () => {
       }
 
     } catch (error) {
+      AxiosToastError(error)
+    }
+  }
+
+  const handleStripePayment = async () => {
+    try {
+      toast.loading("Redirecting to Stripe payment gateway...");
+      const response = await Axios({
+        ...SummaryApi.stripePaymentGateway,
+        data: {
+          list_item: cartProducts ,
+          addressId: deliveryAddress[selectedAddress]?._id,
+          subTotalAmt : cartWithoutDisTotalPrice,
+          totalAmt : cartProductTotalPrice
+        }
+      })
+
+
+      const { data : responseData } = response;
+      
+      if(responseData?.url) {
+        window.location.href = responseData.url;
+      } else {
+        toast.error("Failed to initiate Stripe payment.")
+      }
+
+    } catch (error) {
+      console.error("Stripe Payment Error:", error);
       AxiosToastError(error)
     }
   }
@@ -136,8 +165,8 @@ const ProceedPage = () => {
                 <button onClick={handleCashOnDelivery} className="text-white bg-cyan-800 cursor-pointer p-2 rounded-full hover:bg-green-600 transition-colors duration-300">
                   Cash on Delivery
                 </button>
-                <button className="text-white bg-blue-500 cursor-pointer p-2 rounded-full hover:bg-green-600 transition-colors duration-300">
-                  Pay with Card
+                <button className="text-white bg-blue-500 cursor-pointer p-2 rounded-full hover:bg-green-600 transition-colors duration-300 flex items-center justify-center gap-2" onClick={handleStripePayment}>
+                  <HiCurrencyDollar /> Stripe Payment
                 </button>
               </div>
             </div>
