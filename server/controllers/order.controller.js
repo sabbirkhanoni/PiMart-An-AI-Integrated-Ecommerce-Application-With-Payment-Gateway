@@ -142,7 +142,14 @@ export const ReceiveWebHookFromStripeController = async (request, response) => {
             // handlePaymentIntentSucceeded(paymentIntent);
             const line_items = await Stripe.checkout.sessions.listLineItems(paymentIntent.id);
             const userId = paymentIntent.metadata.userId;
-            const orderedProducts = await getAllOrderedProducts(line_items, userId);
+            const addressId = paymentIntent.metadata.addressId;
+            const orderedProducts = await getAllOrderedProducts({
+                line_items : line_items,
+                userId : userId,
+                addressId : addressId,
+                paymentId : paymentIntent.payment_intent,
+                payment_status : paymentIntent.payment_status,
+            });
 
             const createOrder = await OrderModel.insertMany(orderedProducts);
             if(createOrder) {
