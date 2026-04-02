@@ -23,8 +23,8 @@ export async function getAllOrderedProducts({
         paymentId: paymentId,
         payment_status: payment_status,
         delivery_address: addressId,
-        subTotalAmt: Number(product.amount_total / 100), // Stripe amount is in cents
-        totalAmt: Number(product.amount_total / 100), // Stripe amount is in cents
+        subTotalAmt: Number(item.amount_total / 100), // Stripe amount is in cents
+        totalAmt: Number(item.amount_total / 100), // Stripe amount is in cents
       };
 
       productList.push(payload);
