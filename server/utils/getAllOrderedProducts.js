@@ -9,10 +9,10 @@ export async function getAllOrderedProducts({
   payment_status,
 }) {
   const productList = [];
-  if (line_items && line_items.data && line_items.data.length > 0) {
+  if (line_items && line_items.data.length > 0) {
     for (const item of line_items.data) {
       const product = await Stripe.products.retrieve(item.price.product);
-      
+
       const payload = {
         userId: userId,
         orderId: `ORD-${new mongoose.Types.ObjectId()}`,
@@ -31,6 +31,6 @@ export async function getAllOrderedProducts({
       productList.push(payload);
     }
   }
-
+  console.log("Generated product list for order:", productList);
   return productList;
 }

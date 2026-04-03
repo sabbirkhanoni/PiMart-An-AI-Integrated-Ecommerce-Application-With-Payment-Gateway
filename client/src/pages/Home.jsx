@@ -5,7 +5,11 @@ import { useSelector } from 'react-redux';
 import { URLvalidation } from '../utils/URLValidation.js';
 import { Link, useNavigate } from 'react-router-dom';
 import CategoryWiseProductDispalyAtHome from '../components/DesignModel/CategoryWiseProductDispalyAtHome.jsx';
-
+import { useEffect } from 'react';
+import Axios from '../utils/Axios';
+import SummaryApi from '../common/SummaryApi';
+import { setCategories, setLoading } from '../store/productSlice';
+import { useDispatch } from 'react-redux';
 
 export const Home = () => {
   const loadingCategory = useSelector(state => state.product.loadingCategory);

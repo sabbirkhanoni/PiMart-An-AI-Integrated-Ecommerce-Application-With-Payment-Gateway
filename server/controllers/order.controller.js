@@ -152,20 +152,25 @@ export const ReceiveWebHookFromStripeController = async (request, response) => {
                     const addressId = session.metadata?.addressId;
                     const paymentId = session.payment_intent || session.id;
                     const payment_status = session.payment_status || 'paid';
+                    
+                    if (!userId) {
+                        console.warn('No userId in session.metadata, skipping order creation for session', session.id);
+                        return response.status(200).json({ received: true });
+                    }
 
                     const orderedProducts = await getAllOrderedProducts({
-                        line_items : line_items,
-                        userId : userId,
-                        addressId : addressId,
-                        paymentId : paymentId,
-                        payment_status : payment_status,
+                        line_items,
+                        userId,
+                        addressId,
+                        paymentId,
+                        payment_status,
                     });
 
-                    if (orderedProducts && orderedProducts.length) {
-                        await OrderModel.insertMany(orderedProducts);
-                        await UserModel.findByIdAndUpdate(userId, { shopping_cart: [] });
-                        await CartProductModel.deleteMany({ userId });
-                    }
+                    
+                    await OrderModel.insertMany(orderedProducts);
+                    await UserModel.findByIdAndUpdate(userId, { shopping_cart: [] });
+                    await CartProductModel.deleteMany({ userId: userId });
+                    console.log('Processed checkout.session.completed and cleared cart for user:', userId);
 
                     console.log('Processed checkout.session.completed for session:', session.id);
                 } catch (err) {

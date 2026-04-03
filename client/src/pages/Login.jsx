@@ -60,7 +60,12 @@ function Login() {
         password: "",
       })
 
+
+
       navigate('/');
+
+      
+
     }
 
 
