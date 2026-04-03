@@ -185,3 +185,33 @@ export const ReceiveWebHookFromStripeController = async (request, response) => {
     }
 };
 
+
+export const getAllOrderedProductDetailsController = async (request, response) => {
+    try {
+        const userId = request.userId;
+        const ordersCollection = await OrderModel.find({userId: userId}).sort({ createdAt: -1 }).populate('productId');
+
+        if(!ordersCollection || ordersCollection.length === 0) {
+            return response.status(404).json({
+                success: false,
+                error: true,
+                message: "No orders found."
+            })
+        }
+
+        return response.status(200).json({
+            success: true,
+            error: false,
+            message: "Order Details.",
+            data: ordersCollection,
+        })
+
+    } catch (error) {
+        return response.status(500).json({
+            success: false,
+            error: true,
+            message: error.message || error || 'An error occurred while fetching the order details.'
+        })
+    }
+}
+
