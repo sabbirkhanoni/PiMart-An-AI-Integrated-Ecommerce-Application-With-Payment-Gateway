@@ -12,6 +12,7 @@ export async function getAllOrderedProducts({
   if (line_items && line_items.data && line_items.data.length > 0) {
     for (const item of line_items.data) {
       const product = await Stripe.products.retrieve(item.price.product);
+      
       const payload = {
         userId: userId,
         orderId: `ORD-${new mongoose.Types.ObjectId()}`,

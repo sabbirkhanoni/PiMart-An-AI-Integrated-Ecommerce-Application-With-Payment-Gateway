@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { calculatePriceWithDiscount } from "../utils/calculatePriceWithDiscount";
 import { handleAddAddress } from "../store/deliveryAddressSlice";
+import { setOrderDataSet } from "../store/orderedSlice";
+
 
 export const GlobalContext = createContext(null)
 
@@ -102,10 +104,30 @@ const GlobalContexts = ({children}) => {
         }
     }
 
+    const fetchOrderedProducts = async() => {
+        try {
+            const response = await Axios({
+                ...SummaryApi.getAllOrderedProductDetails
+            })
+
+            const { data : responseData } = response;
+
+            if(responseData.success) {
+                dispatch(setOrderDataSet(responseData.data));
+            } else {
+                toast.error(responseData.message || "Failed to fetch ordered products.")
+            }
+
+        } catch (error) {
+            AxiosToastError(error); 
+        }
+    }
+
     useEffect(() => {
         fetchCartProducts();
         handleLogoutCartClear();
         fetchUserDeliveryAddress();
+        fetchOrderedProducts();
     }, [user]);
 
 
@@ -140,7 +162,8 @@ const GlobalContexts = ({children}) => {
                 cartProductTotalQuantity,
                 cartProduct,
                 cartWithoutDisTotalPrice,
-                savedAmount
+                savedAmount,
+                fetchOrderedProducts
         }}>
             {children}
         </GlobalContext.Provider>

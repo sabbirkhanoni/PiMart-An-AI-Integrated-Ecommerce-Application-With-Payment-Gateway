@@ -11,7 +11,8 @@ export const CashOnDeliveryPaymentController = async (request, response) => {
     try {
         const userId = request.userId;
         const { list_item, addressId, subTotalAmt, totalAmt } = request.body;
-
+        console.log("list_item", list_item);
+        
         const payload = list_item.map((item) => {
             return {
                 userId : userId,
@@ -28,6 +29,7 @@ export const CashOnDeliveryPaymentController = async (request, response) => {
                 totalAmt : totalAmt,
             }
         });
+        console.log("payload", payload);
 
         const createOrder = await OrderModel.insertMany(payload);
         
@@ -39,7 +41,8 @@ export const CashOnDeliveryPaymentController = async (request, response) => {
         return response.status(200).json({
             success: true,
             error: false,
-            message: "Cash on delivery Successful."
+            message: "Cash on delivery Successful.",
+            data: createOrder,
         })
         
     } catch (error) {
@@ -96,7 +99,6 @@ export const StripePaymentController = async (request, response) => {
             customer_email: user.email,
             metadata: {
                 userId: userId,
-                orderId: `ORD-${new mongoose.Types.ObjectId()}`,
                 addressId: addressId,
             },
             success_url: `${process.env.FRONTEND_URL}/complete`,
@@ -127,7 +129,7 @@ export const ReceiveWebHookFromStripeController = async (request, response) => {
 
     try {
         const signature = request.headers['stripe-signature'];
-        const rawBody = request.body; // express.raw middleware must be applied before express.json
+        const rawBody = request.body;
         if (!endpointSecret) {
             console.error('Missing STRIPE_WEBHOOK_SECRET_KEY');
             return response.status(500).send('Webhook secret not configured');
@@ -152,11 +154,11 @@ export const ReceiveWebHookFromStripeController = async (request, response) => {
                     const payment_status = session.payment_status || 'paid';
 
                     const orderedProducts = await getAllOrderedProducts({
-                        line_items,
-                        userId,
-                        addressId,
-                        paymentId,
-                        payment_status,
+                        line_items : line_items,
+                        userId : userId,
+                        addressId : addressId,
+                        paymentId : paymentId,
+                        payment_status : payment_status,
                     });
 
                     if (orderedProducts && orderedProducts.length) {
@@ -189,7 +191,7 @@ export const ReceiveWebHookFromStripeController = async (request, response) => {
 export const getAllOrderedProductDetailsController = async (request, response) => {
     try {
         const userId = request.userId;
-        const ordersCollection = await OrderModel.find({userId: userId}).sort({ createdAt: -1 }).populate('productId');
+        const ordersCollection = await OrderModel.find({userId: userId}).sort({ createdAt: -1 }).populate('delivery_address');
 
         if(!ordersCollection || ordersCollection.length === 0) {
             return response.status(404).json({

@@ -150,6 +150,10 @@ const SummaryApi = {
   cashOnDeliveryPayment: {
     url: "/api/order/cash-on-delivery-payment",
     method: "post"
+  },
+  getAllOrderedProductDetails: {
+    url: "/api/order/order-details",
+    method: "get"
   }
 };
 

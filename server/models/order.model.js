@@ -16,7 +16,7 @@ const orderSchema = new mongoose.Schema({
         type : mongoose.Schema.ObjectId,
         ref : 'product'
     },
-    order_details : {
+    product_details : {
         _id : String,
         name : String,
         image :Array,

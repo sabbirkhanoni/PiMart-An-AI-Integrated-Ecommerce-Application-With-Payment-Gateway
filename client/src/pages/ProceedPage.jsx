@@ -17,7 +17,8 @@ const ProceedPage = () => {
     cartWithoutDisTotalPrice,
     savedAmount,
     cartProductTotalQuantity,
-    fetchCartProducts
+    fetchCartProducts,
+    fetchOrderedProducts
   } = useGlobalContext();
 
   const [selectedAddress, setSelectedAddress] = useState(0);
@@ -46,6 +47,9 @@ const ProceedPage = () => {
         toast.success(responseData?.message || "Cash on delivery successful.")
         if(fetchCartProducts) {
           fetchCartProducts();
+        }
+        if(fetchOrderedProducts) {
+          fetchOrderedProducts();
         }
         navigate("/complete",{
           state: {
@@ -86,6 +90,13 @@ const ProceedPage = () => {
         window.location.href = responseData.url;
       } else {
         toast.error("Failed to initiate Stripe payment.")
+      }
+
+      if(fetchCartProducts) {
+        fetchCartProducts();
+      }
+      if(fetchOrderedProducts) {
+        fetchOrderedProducts();
       }
 
     } catch (error) {
