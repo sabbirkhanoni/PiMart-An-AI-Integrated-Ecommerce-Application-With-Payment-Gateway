@@ -17,6 +17,7 @@ const CategoryWiseProductDispalyAtHome = ({categoryId,categoryName}) => {
     const [loading, setLoading] = useState(false);
     const fetchAllSubCategoryDataFromReduxStore = useSelector(state => state.product.allSubCategory)
     const containeroverflowRef = useRef();
+    const user = useSelector(state => state.user);
 
 
     const fetchProductByCategoryWise = async () => {
@@ -65,7 +66,13 @@ const CategoryWiseProductDispalyAtHome = ({categoryId,categoryName}) => {
 
     useEffect(() => {
         fetchProductByCategoryWise();
-    }, [])
+    }, [categoryId])
+
+    useEffect(() => {
+        if(productDataByCategoryWise.length > 0) {
+            fetchProductByCategoryWise();
+        }
+    }, [user._id])
 
     const loadingProductCardNumberToShow = new Array(6).fill(null);
 

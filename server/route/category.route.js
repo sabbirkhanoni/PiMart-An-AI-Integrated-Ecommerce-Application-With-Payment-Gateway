@@ -5,7 +5,7 @@ import { AddCategoryController,GetAllCategoriesController, UpdateCategoryControl
 const categoryRouter = Router();
 
 categoryRouter.post('/create',auth,AddCategoryController);
-categoryRouter.get('/get',auth,GetAllCategoriesController);
+categoryRouter.get('/get',GetAllCategoriesController);
 categoryRouter.put('/update',auth,UpdateCategoryController);
 categoryRouter.delete('/delete',auth,DeleteCategoryController);
 

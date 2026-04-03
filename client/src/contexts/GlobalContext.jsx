@@ -163,6 +163,7 @@ const GlobalContexts = ({children}) => {
                 cartProduct,
                 cartWithoutDisTotalPrice,
                 savedAmount,
+                user,
                 fetchOrderedProducts
         }}>
             {children}

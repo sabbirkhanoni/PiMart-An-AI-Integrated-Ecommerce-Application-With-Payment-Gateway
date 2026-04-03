@@ -8,8 +8,9 @@ import CategoryWiseProductDispalyAtHome from '../components/DesignModel/Category
 import { useEffect } from 'react';
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
-import { setCategories, setLoading } from '../store/productSlice';
 import { useDispatch } from 'react-redux';
+import { useState } from 'react';
+import { useGlobalContext } from '../contexts/GlobalContext.jsx';
 
 export const Home = () => {
   const loadingCategory = useSelector(state => state.product.loadingCategory);
@@ -27,8 +28,6 @@ export const Home = () => {
       const url = `/${URLvalidation(categoryName)}-${categoryId}/${URLvalidation(subCategory.name)}-${subCategory._id}`;
       navigate(url);
   }
-
-
 
   return (
     <section className='bg-white'>

@@ -8,7 +8,7 @@ const auth = async(request,response,next) => {
         
         if(!token){
             return response.status(401).json({
-                message : "Please Provide Token, I am from Auth middleware",
+                message : "Please Login Again",
                 error : true,
                 success : false
             })
@@ -31,7 +31,7 @@ const auth = async(request,response,next) => {
 
     } catch (error) {
         return response.status(500).json({
-            message : "Token Expired, Please Login Again" || error.message || error,
+            message : "Internal Server Error" || error.message || error,
             error : true,
             success : false
         })
