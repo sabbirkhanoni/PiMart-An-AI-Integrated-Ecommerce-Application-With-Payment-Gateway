@@ -6,7 +6,6 @@ import AxiosToastError from "../utils/AxioxToastError";
 import Loading from "../components/Mini/Loading";
 import ProductDisplayCard from "../components/DesignModel/ProductDisplayCard";
 import { useSelector } from "react-redux";
-import { all } from "axios";
 import { URLvalidation } from "../utils/URLValidation";
 import NoData from "../components/Mini/NoData";
 

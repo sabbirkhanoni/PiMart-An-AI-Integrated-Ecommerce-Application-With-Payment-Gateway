@@ -9,7 +9,6 @@ import { MdDeleteForever } from "react-icons/md";
 import EditCategoryComponent from "../components/ViewPageComponent/EditCategoryComponent";
 import ConfirmationPermissionBox from "../components/Mini/ConfirmationPermissionBox";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
 import {useEffect, useState } from "react";
 
 const CategoryPage = () => {

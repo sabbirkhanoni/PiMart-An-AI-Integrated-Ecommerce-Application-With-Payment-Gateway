@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import PersonalAddressComp from "../components/DesignModel/PersonalAddressComp";
-import { useEffect } from "react";
+
 
 
 const PersonalAddress = () => {

@@ -6,7 +6,6 @@ import SummaryApi from '../common/SummaryApi'
 import DisplayTable from '../components/DesignModel/TableDesignModel'
 import { createColumnHelper } from '@tanstack/react-table'
 import ViewImage from '../components/Mini/ImageZoom'
-import { LuPencil } from "react-icons/lu";
 import { MdDelete  } from "react-icons/md";
 import { HiPencil } from "react-icons/hi";
 import EditSubCategoryComponent from '../components/ViewPageComponent/EditSubCategoryComponent'

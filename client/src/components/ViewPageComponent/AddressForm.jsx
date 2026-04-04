@@ -4,7 +4,7 @@ import SummaryApi from '../../common/SummaryApi';
 import AxiosToastError from '../../utils/AxioxToastError';
 import toast from 'react-hot-toast';
 import { IoClose } from 'react-icons/io5';
-import { GlobalContext, useGlobalContext } from '../../contexts/GlobalContext';
+import { useGlobalContext } from '../../contexts/GlobalContext';
 
 const AddressForm = ({close}) => {
 

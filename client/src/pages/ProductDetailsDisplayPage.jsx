@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { data, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import AxiosToastError from "../utils/AxioxToastError";
 import Axios from "../utils/Axios";
 import SummaryApi from "../common/SummaryApi";

@@ -11,7 +11,7 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useState } from "react";
-import UserMenu from "./userMenu";
+import UserMenu from "./UserMenu";
 import { DisplayPriceInBDT } from "../utils/DisplayPriceInBDT";
 import { useGlobalContext } from "../contexts/GlobalContext";
 import CartModel from "./DesignModel/CartModel";

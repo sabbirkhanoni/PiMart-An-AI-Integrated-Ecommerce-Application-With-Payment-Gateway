@@ -9,7 +9,6 @@ import AxiosToastError from "../utils/AxioxToastError";
 import Axios from "../utils/Axios";
 import SummaryApi from "../common/SummaryApi";
 import toast from "react-hot-toast";
-import { loadStripe } from '@stripe/stripe-js';
 import { HiCurrencyDollar } from "react-icons/hi";
 const ProceedPage = () => {
   const {
