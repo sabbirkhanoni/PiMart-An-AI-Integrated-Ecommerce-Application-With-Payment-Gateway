@@ -8,7 +8,7 @@ const PersonalOrder = () => {
   const orderedProduct = useSelector(state => state.order.orderDataSet);
   console.log("orderedProduct", orderedProduct);
   return (
-    <section className='h-screen top-0 left-0 right-0 bg-gray-100'>
+    <section className='min-h-screen max-h-[calc(100vh-4rem)] bg-gray-100 overflow-y-auto'>
       <div className='container mx-auto p-1 shadow-md flex items-center justify-center'>
         {
           orderedProduct[0] ? (

@@ -64,10 +64,11 @@ const ProductDetailsDisplayPage = () => {
 
 
   return (
-    <section className= "container bg-white mx-auto p-2 grid lg:grid-cols-2">
+    <section className="">
+      <div className= " bg-white mx-auto p-2 grid lg:grid-cols-2">
         {/* Left Part */}
         <div className='space-y-4'>
-            <div className='h-full bg-white min-h-55 max-h-55 lg:min-h-[60vh] lg:max-h-[60vh]'>
+            <div className='bg-white h-[300px] lg:h-[400px]'>
                 <img
                     src={productDetailsData.image[image]}
                     alt="product image"
@@ -261,6 +262,7 @@ const ProductDetailsDisplayPage = () => {
                 </div>
               </div>
         </div>
+    </div>
     </section>
   );
 };

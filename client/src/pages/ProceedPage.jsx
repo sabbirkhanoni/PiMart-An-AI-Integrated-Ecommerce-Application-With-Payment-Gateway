@@ -106,7 +106,7 @@ const ProceedPage = () => {
   }
   
   return (
-    <section className="bg-white">
+    <section className="bg-white min-h-screen">
       <div className="container mx-auto p-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
         <div className="">
           <h2 className="p-2 rounded mb-4 text-gray-600 border border-gray-300 text-center">
