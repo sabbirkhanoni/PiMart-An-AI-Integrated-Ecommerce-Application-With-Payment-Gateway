@@ -1,16 +1,11 @@
 
 import largeBanner from '../assets/largeBanner.png';
-import mobileSizeBanner from '../assets/mobileSize-Banner.png';
+import mobileSizeBanner from '../assets/mobileSize-banner.png';
 import { useSelector } from 'react-redux';
 import { URLvalidation } from '../utils/URLValidation.js';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import CategoryWiseProductDispalyAtHome from '../components/DesignModel/CategoryWiseProductDispalyAtHome.jsx';
-import { useEffect } from 'react';
-import Axios from '../utils/Axios';
-import SummaryApi from '../common/SummaryApi';
-import { useDispatch } from 'react-redux';
-import { useState } from 'react';
-import { useGlobalContext } from '../contexts/GlobalContext.jsx';
+
 
 export const Home = () => {
   const loadingCategory = useSelector(state => state.product.loadingCategory);
