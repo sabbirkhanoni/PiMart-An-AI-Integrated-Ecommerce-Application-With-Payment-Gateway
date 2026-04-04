@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { MdOutlineCloudUpload } from "react-icons/md";
 import UploadImage from "../utils/UploadImage";
-import MiniLoading from "../components/Mini/miniLoading";
+import MiniLoading from "../components/Mini/MiniLoading.jsx";
 import ImageZoom from "../components/Mini/ImageZoom";
 import { MdDelete } from "react-icons/md";
 import { useSelector } from "react-redux";
