@@ -2,7 +2,7 @@ import { useState } from "react"
 import SummaryApi from "../common/SummaryApi"
 import AxiosToastError from "../utils/AxioxToastError"
 import Axios from "../utils/Axios"
-import MiniLoading from "../components/Mini/miniLoading"
+import MiniLoading from "../components/Mini/MiniLoading"
 import { useEffect } from "react"
 import { MdNavigateBefore } from "react-icons/md";
 import { MdNavigateNext } from "react-icons/md";
