@@ -14,6 +14,16 @@ const auth = async(request,response,next) => {
             })
         }
 
+        const secret = process.env.SECRET_KEY_ACCESS_TOKEN;
+        if(!secret) {
+            console.error('Missing SECRET_KEY_ACCESS_TOKEN in environment variables');
+            return response.status(500).json({
+                message : "Server configuration error",
+                error : true,
+                success : false
+            })
+        }
+
         //decode the token
         const decode = await jwt.verify(token,process.env.SECRET_KEY_ACCESS_TOKEN)
 

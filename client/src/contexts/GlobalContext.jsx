@@ -124,10 +124,12 @@ const GlobalContexts = ({children}) => {
     }
 
     useEffect(() => {
-        fetchCartProducts();
-        handleLogoutCartClear();
-        fetchUserDeliveryAddress();
-        fetchOrderedProducts();
+        if(user && user._id){
+            fetchCartProducts();
+            handleLogoutCartClear();
+            fetchUserDeliveryAddress();
+            fetchOrderedProducts();
+        }
     }, [user]);
 
 
