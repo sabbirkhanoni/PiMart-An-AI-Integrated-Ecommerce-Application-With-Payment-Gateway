@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 import { URLvalidation } from '../utils/URLValidation.js';
 import { useNavigate } from 'react-router-dom';
 import CategoryWiseProductDispalyAtHome from '../components/DesignModel/CategoryWiseProductDispalyAtHome.jsx';
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 
 export const Home = () => {
@@ -12,6 +14,8 @@ export const Home = () => {
   const fetchAllCategoryDataFromReduxStore = useSelector(state => state.product.allCategory)
   const fetchAllSubCategoryDataFromReduxStore = useSelector(state => state.product.allSubCategory)
   const navigate = useNavigate();
+
+
 
   const handleRedirectToCategoryWiseProductList = (categoryId,categoryName) => {
       const subCategory = fetchAllSubCategoryDataFromReduxStore.find(subCat => {
@@ -23,6 +27,9 @@ export const Home = () => {
       const url = `/${URLvalidation(categoryName)}-${categoryId}/${URLvalidation(subCategory.name)}-${subCategory._id}`;
       navigate(url);
   }
+    useEffect(() => {
+    toast.success("Implement SSLCommerz Now! Live within 2 hours, 27 May 2026 at 7:00 PM");
+  }, []);
 
   return (
     <section className='bg-white'>

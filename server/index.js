@@ -35,13 +35,7 @@ app.use(helmet({
     crossOriginOpenerPolicy: false
 }));
 
-const PORT = 8080 || process.env.PORT;
-
-app.get("/", (request, response) => {
-    response.json({ 
-        message: "Hello from server! Server is Running" + PORT 
-    });
-});
+const PORT = process.env.PORT || 8080;
 
 app.use('/api/user',userRouter);
 app.use('/api/category', categoryRouter);
@@ -54,8 +48,12 @@ app.use('/api/order', orderRouter);
 app.use('/api', sslcommerzRouter);
 
 
-connectDB().then(() => {
+connectDB();
+
+if (process.env.NODE_ENV !== "production") {
     app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
     });
-});
+}
+
+export default app;
