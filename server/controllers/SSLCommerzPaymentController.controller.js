@@ -112,8 +112,10 @@ export const SSLCommerzPaymentController = async (req, res) => {
         await OrderModel.insertMany(orderedProducts);
         
         //not need on production of application (only for localhost)
-        //await UserModel.findByIdAndUpdate(userId,{shopping_cart: []});
-        //await CartProductModel.deleteMany({userId: userId});
+        if(process.env.NODE_ENV !== "production"){
+            await UserModel.findByIdAndUpdate(userId,{shopping_cart: []});
+            await CartProductModel.deleteMany({userId: userId});
+        }
 
     } catch (err) {
         console.error('Error saving orders:', err);

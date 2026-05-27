@@ -4,9 +4,19 @@ import auth from "../middleware/auth.js";
 const sslcommerzRouter = Router();
 
 sslcommerzRouter.post("/sslcommerz-payment", auth, SSLCommerzPaymentController);
-sslcommerzRouter.get("/payment-complete/:tran_id", SSLCommerzPaymentSuccessController);
-sslcommerzRouter.get("/payment-failed/:tran_id", SSLCommerzPaymentFailedController);
-sslcommerzRouter.get("/payment-cancel/:tran_id", SSLCommerzPaymentCancelController);
+
+sslcommerzRouter.route("/payment-complete/:tran_id")
+  .get(SSLCommerzPaymentSuccessController)
+  .post(SSLCommerzPaymentSuccessController);
+
+sslcommerzRouter.route("/payment-failed/:tran_id")
+  .get(SSLCommerzPaymentFailedController)
+  .post(SSLCommerzPaymentFailedController);
+
+sslcommerzRouter.route("/payment-cancel/:tran_id")
+  .get(SSLCommerzPaymentCancelController)
+  .post(SSLCommerzPaymentCancelController);
+  
 sslcommerzRouter.post("/payment-ipn", SSLCommerzIpnController);
 
 export default sslcommerzRouter;
