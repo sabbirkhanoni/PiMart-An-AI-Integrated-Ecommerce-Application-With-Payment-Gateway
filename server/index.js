@@ -37,6 +37,12 @@ app.use(helmet({
 
 const PORT = process.env.PORT || 8080;
 
+app.get("/", (request, response) => {
+    response.json({ 
+        message: "Hello from server! Server is Running on port " + PORT 
+    });
+});
+
 app.use('/api/user',userRouter);
 app.use('/api/category', categoryRouter);
 app.use('/api/file', uploadImageRouter);
