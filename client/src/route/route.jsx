@@ -30,7 +30,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: "/",
+        path: "",
         element: <Home />,
       },
       {
@@ -121,26 +121,30 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "/product/:product-details",
+        path: "product/:product-details",
         element: <ProductDetailsDisplayPage />,
       },
       {
-        path: "/cart",
+        path: "cart",
         element: <CartModel />,
       },
       {
         path: "proceed",
         element: <ProceedPage />
       },
-      {
-        path: "complete",
-        element: <Complete />
-      },
-      {
-        path: "failed",
-        element: <Failed />
-      }
     ],
+  },
+  {
+    path: "/payment-complete/:tran_id",
+    element: <Complete />
+  },
+  {
+    path: "/payment-failed/:tran_id",
+    element: <Failed />
+  },
+  {
+    path: "/payment-cancel/:tran_id",
+    element: <Failed />
   },
 ]);
 

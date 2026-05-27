@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-
+dotenv.config();
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -15,8 +15,8 @@ import productRouter from './route/product.route.js';
 import cartRouter from './route/cart.route.js';
 import deliveryAddressRouter from './route/deliveryAddress.route.js';
 import orderRouter from './route/order.route.js';
+import sslcommerzRouter from './route/SSLCOMMERZ.route.js';
 
-dotenv.config();
 
 const app = express();
 
@@ -35,7 +35,7 @@ app.use(helmet({
     crossOriginOpenerPolicy: false
 }));
 
-const PORT = 8080 || process.env.PORT;
+const PORT = process.env.PORT || 8080;
 
 app.get("/", (request, response) => {
     response.json({ 
@@ -43,25 +43,17 @@ app.get("/", (request, response) => {
     });
 });
 
-//use user.route.js which basically use registerUserController(user.controller.js)
 app.use('/api/user',userRouter);
-//use category.route.js which basically use UploadCategoryController(category.controller.js)
 app.use('/api/category', categoryRouter);
-//use uploadImage.route.js which basically use uploadImageController(uploadImage.controller.js)
 app.use('/api/file', uploadImageRouter);
-//use subCategory.route.js which basically use AddSubCatgoryController(subCategory.controller.js)
 app.use('/api/subcategory', subCategoryRouter);
-//use product.route.js which basically use AddProductController(product.controller.js)
 app.use('/api/product', productRouter);
-//use cart.route.js which basically use AddProductToCartController(cart.controller.js)
 app.use('/api/cart', cartRouter);
-//use deliveryAddress.route.js which basically use addDeliveryAddress(deliveryAddress.controller.js)
 app.use('/api/delivery-address', deliveryAddressRouter);
-//use order.route.js which basically use CashOnDeliveryPaymentController(order.controller.js)
 app.use('/api/order', orderRouter);
+app.use('/api', sslcommerzRouter);
 
 
-//before starting the server, connect to the database
 connectDB().then(() => {
     app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);

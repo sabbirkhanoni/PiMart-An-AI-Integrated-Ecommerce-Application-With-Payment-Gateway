@@ -9,7 +9,7 @@ import AxiosToastError from "../utils/AxioxToastError";
 import Axios from "../utils/Axios";
 import SummaryApi from "../common/SummaryApi";
 import toast from "react-hot-toast";
-import { HiCurrencyDollar } from "react-icons/hi";
+import { HiCurrencyBangladeshi, HiCurrencyDollar } from "react-icons/hi";
 const ProceedPage = () => {
   const {
     cartProductTotalPrice,
@@ -103,7 +103,44 @@ const ProceedPage = () => {
       AxiosToastError(error)
     }
   }
-  
+
+
+  const handleSSLCOMMERZPayment = async () => {
+    try {
+      const response = await Axios({
+        ...SummaryApi.SSLCOMMERZPayment,
+        data: {
+          list_item: cartProducts,
+          addressId: deliveryAddress[selectedAddress]?._id,
+        }
+      });
+
+      console.log("SSLCommerz Payment Response:", response);
+      const { data: responseData } = response;
+
+      console.log("SSLCommerz Payment Response Data:", responseData);
+
+      if (responseData?.url) {
+        window.location.href = responseData.url;
+         toast.success(responseData?.message || "Redirecting to SSLCommerz payment gateway...");
+      } else {
+        toast.error(responseData?.message || "Failed to initiate SSLCommerz payment.");
+        return;
+      }
+    
+      if (fetchCartProducts) {
+        fetchCartProducts();
+      }
+      if (fetchOrderedProducts) {
+        fetchOrderedProducts();
+      }
+
+    } catch (error) {
+      console.error("SSLCommerz Payment Error:", error);
+      AxiosToastError(error);
+    }
+  }
+
   return (
     <section className="bg-white min-h-screen">
       <div className="container mx-auto p-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
@@ -171,12 +208,23 @@ const ProceedPage = () => {
                   {DisplayPriceInBDT(cartProductTotalPrice)}
                 </span>
               </div>
-              <div className="grid grid-cols-2 items-center justify-center gap-4 mt-2 pb-4">
-                <button onClick={handleCashOnDelivery} className="text-white bg-cyan-800 cursor-pointer p-2 rounded-full hover:bg-green-600 transition-colors duration-300">
+              <div className="grid grid-cols-3 items-center justify-center gap-4 mt-2 pb-4">
+                <button
+                  onClick={handleCashOnDelivery}
+                  className="text-white bg-cyan-800 cursor-pointer p-2 rounded-full hover:bg-green-600 transition-colors duration-300">
                   Cash on Delivery
                 </button>
-                <button className="text-white bg-blue-500 cursor-pointer p-2 rounded-full hover:bg-green-600 transition-colors duration-300 flex items-center justify-center gap-2" onClick={handleStripePayment}>
+                <button
+                  className="text-white bg-blue-500 cursor-pointer p-2 rounded-full hover:bg-green-600 transition-colors duration-300 flex items-center justify-center gap-2"
+                  onClick={handleStripePayment}>
                   <HiCurrencyDollar /> Stripe Payment
+                </button>
+                <button
+                  className="text-white bg-pink-700 cursor-pointer p-2 rounded-full hover:bg-green-600 transition-colors duration-300 flex items-center justify-center gap-2"
+                  onClick={handleSSLCOMMERZPayment}>
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="flex justify-center items-center gap-3"><HiCurrencyBangladeshi /> SSLCommerz</div>
+                  </div>
                 </button>
               </div>
             </div>

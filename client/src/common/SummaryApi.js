@@ -143,6 +143,10 @@ const SummaryApi = {
     url: "/api/order/stripe-payment",
     method: "post"
   },
+  SSLCOMMERZPayment: {
+    url: "/api/sslcommerz-payment",
+    method: "post"
+  },
   deleteDeliveryAddress: {
     url: "/api/delivery-address/delete",
     method: "delete"
