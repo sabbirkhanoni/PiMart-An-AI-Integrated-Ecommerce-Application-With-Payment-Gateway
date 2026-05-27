@@ -35,7 +35,7 @@ app.use(helmet({
     crossOriginOpenerPolicy: false
 }));
 
-const PORT = process.env.PORT || 8080;
+const PORT = 8080 || process.env.PORT;
 
 app.get("/", (request, response) => {
     response.json({ 
