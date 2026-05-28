@@ -27,9 +27,6 @@ export const Home = () => {
       const url = `/${URLvalidation(categoryName)}-${categoryId}/${URLvalidation(subCategory.name)}-${subCategory._id}`;
       navigate(url);
   }
-    useEffect(() => {
-    toast.success("Implement SSLCommerz Now! Live within 2 hours, 27 May 2026 at 7:00 PM");
-  }, []);
 
   return (
     <section className='bg-white'>
