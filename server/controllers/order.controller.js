@@ -268,3 +268,89 @@ export const getAllOrderedProductDetailsController = async (request, response) =
     }
 }
 
+// User-initiated order cancellation (only when order is in 'Pending' state)
+export const cancelOrderController = async (request, response) => {
+    try {
+        const userId = request.userId;
+        const { orderId, reason } = request.body;
+
+        if (!orderId) {
+            return response.status(400).json({
+                success: false,
+                error: true,
+                message: "Order ID is required."
+            });
+        }
+
+        const orders = await OrderModel.find({ orderId, userId });
+
+        if (!orders || orders.length === 0) {
+            return response.status(404).json({
+                success: false,
+                error: true,
+                message: "Order not found or you are not authorized to cancel this order."
+            });
+        }
+
+        const currentStatus = orders[0].delivery_status || 'Pending';
+
+        if (currentStatus === 'Cancelled') {
+            return response.status(400).json({
+                success: false,
+                error: true,
+                message: "This order is already cancelled."
+            });
+        }
+
+        if (currentStatus !== 'Pending') {
+            return response.status(400).json({
+                success: false,
+                error: true,
+                message: `Order cannot be cancelled because it is already '${currentStatus}'. Please contact customer support.`
+            });
+        }
+
+        // Restore inventory stock for each product in this order
+        for (const item of orders) {
+            const prodId = item?.productId?._id || item?.productId;
+            const qty = Number(item?.quantity) || 1;
+            if (prodId) {
+                await ProductModel.updateOne(
+                    { _id: prodId },
+                    { $inc: { stock: qty } }
+                );
+            }
+        }
+
+        const cancelNote = reason?.trim() ? `Cancelled by customer: ${reason.trim()}` : "Order cancelled by customer.";
+
+        await OrderModel.updateMany(
+            { orderId, userId },
+            {
+                $set: { delivery_status: 'Cancelled' },
+                $push: {
+                    statusHistory: {
+                        status: 'Cancelled',
+                        timestamp: new Date(),
+                        note: cancelNote
+                    }
+                }
+            }
+        );
+
+        return response.status(200).json({
+            success: true,
+            error: false,
+            message: "Order cancelled successfully and product inventory restored."
+        });
+
+    } catch (error) {
+        console.error("Error in cancelOrderController:", error);
+        return response.status(500).json({
+            success: false,
+            error: true,
+            message: error.message || error || "Failed to cancel order."
+        });
+    }
+};
+
