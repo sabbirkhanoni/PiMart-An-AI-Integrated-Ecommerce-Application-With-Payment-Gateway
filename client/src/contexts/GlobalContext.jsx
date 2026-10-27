@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { calculatePriceWithDiscount } from "../utils/calculatePriceWithDiscount";
 import { handleAddAddress } from "../store/deliveryAddressSlice";
 import { setOrderDataSet } from "../store/orderedSlice";
+import { setWishlist, clearWishlist } from "../store/wishlistSlice";
 
 
 export const GlobalContext = createContext(null)
@@ -123,12 +124,29 @@ const GlobalContexts = ({children}) => {
         }
     }
 
+    const fetchWishlistItems = async () => {
+        try {
+            const response = await Axios({
+                ...SummaryApi.getWishlist,
+            });
+            const { data: responseData } = response;
+            if (responseData.success) {
+                dispatch(setWishlist(responseData.data));
+            }
+        } catch {
+            // Handled silently
+        }
+    };
+
     useEffect(() => {
         if(user && user._id){
             fetchCartProducts();
             handleLogoutCartClear();
             fetchUserDeliveryAddress();
             fetchOrderedProducts();
+            fetchWishlistItems();
+        } else {
+            dispatch(clearWishlist());
         }
     }, [user]);
 
@@ -166,7 +184,8 @@ const GlobalContexts = ({children}) => {
                 cartWithoutDisTotalPrice,
                 savedAmount,
                 user,
-                fetchOrderedProducts
+                fetchOrderedProducts,
+                fetchWishlistItems
         }}>
             {children}
         </GlobalContext.Provider>
