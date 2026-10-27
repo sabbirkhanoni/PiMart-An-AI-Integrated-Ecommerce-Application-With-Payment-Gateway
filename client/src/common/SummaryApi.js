@@ -242,6 +242,18 @@ const SummaryApi = {
   deleteBanner: {
     url: "/api/banner/delete",
     method: "delete"
+  },
+  getAllUsersAdmin: {
+    url: "/api/user/admin/all-users",
+    method: "get"
+  },
+  updateUserStatusAdmin: {
+    url: "/api/user/admin/update-status",
+    method: "put"
+  },
+  updateUserRoleAdmin: {
+    url: "/api/user/admin/update-role",
+    method: "put"
   }
 };
 
