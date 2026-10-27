@@ -18,11 +18,13 @@ import {
   FiBox, 
   FiShoppingBag, 
   FiMapPin, 
+  FiHeart,
   FiLogOut 
 } from "react-icons/fi";
 
 const UserMenu = ({ close }) => {
   const user = useSelector((state) => state.user);
+  const wishlistItems = useSelector((state) => state?.wishlist?.wishlistItems || []);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -190,6 +192,32 @@ const UserMenu = ({ close }) => {
         >
           <FiShoppingBag size={17} />
           <span>My Orders</span>
+        </Link>
+
+        <Link
+          onClick={handleClose}
+          to="/dashboard/wishlist"
+          className={`flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+            currentPath === "/dashboard/wishlist"
+              ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-200"
+              : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+          }`}
+        >
+          <div className="flex items-center gap-2.5">
+            <FiHeart size={17} />
+            <span>My Wishlist</span>
+          </div>
+          {wishlistItems.length > 0 && (
+            <span
+              className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                currentPath === "/dashboard/wishlist"
+                  ? "bg-white text-blue-600"
+                  : "bg-rose-100 text-rose-600"
+              }`}
+            >
+              {wishlistItems.length}
+            </span>
+          )}
         </Link>
 
         <Link
