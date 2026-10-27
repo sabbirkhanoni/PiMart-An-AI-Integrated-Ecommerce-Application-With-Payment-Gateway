@@ -222,6 +222,26 @@ const SummaryApi = {
   applyCoupon: {
     url: "/api/coupon/apply",
     method: "post"
+  },
+  createBanner: {
+    url: "/api/banner/create",
+    method: "post"
+  },
+  getAllBannersAdmin: {
+    url: "/api/banner/get-all-admin",
+    method: "get"
+  },
+  getActiveBanners: {
+    url: "/api/banner/get-active",
+    method: "get"
+  },
+  updateBanner: {
+    url: "/api/banner/update",
+    method: "put"
+  },
+  deleteBanner: {
+    url: "/api/banner/delete",
+    method: "delete"
   }
 };
 
