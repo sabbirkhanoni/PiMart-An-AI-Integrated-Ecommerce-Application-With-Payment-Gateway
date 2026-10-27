@@ -540,45 +540,161 @@ export const getAdminAnalyticsOverview = async (req, res) => {
   }
 };
 
-// Get all orders for Admin with filters, pagination and search
+// Get all orders for Admin with grouping, filters, pagination and search
 export const getAllOrdersForAdmin = async (req, res) => {
   try {
-    const { page = 1, limit = 20, search = "", status = "" } = req.query;
-    const pageNum = Number(page) || 1;
-    const limitNum = Number(limit) || 20;
+    const { 
+      page = 1, 
+      limit = 12, 
+      search = "", 
+      delivery_status = "All", 
+      payment_status = "All" 
+    } = req.query;
+
+    const pageNum = Math.max(1, Number(page) || 1);
+    const limitNum = Math.max(1, Number(limit) || 12);
     const skip = (pageNum - 1) * limitNum;
 
-    const filter = {};
+    // Base grouping pipeline
+    const basePipeline = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "customer"
+        }
+      },
+      { $unwind: { path: "$customer", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "addresses",
+          localField: "delivery_address",
+          foreignField: "_id",
+          as: "address"
+        }
+      },
+      { $unwind: { path: "$address", preserveNullAndEmptyArrays: true } },
+      {
+        $group: {
+          _id: "$orderId",
+          orderId: { $first: "$orderId" },
+          userId: { $first: "$userId" },
+          customer: {
+            $first: {
+              _id: "$customer._id",
+              name: "$customer.name",
+              email: "$customer.email",
+              mobile: "$customer.mobile"
+            }
+          },
+          delivery_address: { $first: "$address" },
+          paymentId: { $first: "$paymentId" },
+          payment_status: { $first: "$payment_status" },
+          delivery_status: { $first: { $ifNull: ["$delivery_status", "Pending"] } },
+          statusHistory: { $first: "$statusHistory" },
+          invoice_receipt: { $first: "$invoice_receipt" },
+          createdAt: { $first: "$createdAt" },
+          updatedAt: { $first: "$updatedAt" },
+          totalAmount: { $sum: "$totalAmt" },
+          totalItems: { $sum: "$quantity" },
+          items: {
+            $push: {
+              _id: "$_id",
+              productId: "$productId",
+              product_details: "$product_details",
+              quantity: "$quantity",
+              subTotalAmt: "$subTotalAmt",
+              totalAmt: "$totalAmt"
+            }
+          }
+        }
+      }
+    ];
 
-    if (status) {
-      filter.payment_status = status;
+    // Status Counts Aggregation (for tab badges across all orders)
+    const countsAggregation = await OrderModel.aggregate([
+      {
+        $group: {
+          _id: "$orderId",
+          delivery_status: { $first: { $ifNull: ["$delivery_status", "Pending"] } }
+        }
+      },
+      {
+        $group: {
+          _id: "$delivery_status",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const counts = {
+      All: 0,
+      Pending: 0,
+      Processing: 0,
+      Shipped: 0,
+      Delivered: 0,
+      Cancelled: 0
+    };
+
+    countsAggregation.forEach((item) => {
+      if (counts[item._id] !== undefined) {
+        counts[item._id] = item.count;
+      }
+      counts.All += item.count;
+    });
+
+    // Build filter matching stage
+    const matchStage = {};
+
+    if (delivery_status && delivery_status !== "All") {
+      matchStage.delivery_status = delivery_status;
     }
 
-    if (search) {
-      filter.$or = [
-        { orderId: { $regex: search, $options: "i" } },
-        { "product_details.name": { $regex: search, $options: "i" } }
+    if (payment_status && payment_status !== "All") {
+      matchStage.payment_status = payment_status;
+    }
+
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), "i");
+      matchStage.$or = [
+        { orderId: searchRegex },
+        { "customer.name": searchRegex },
+        { "customer.email": searchRegex },
+        { "customer.mobile": searchRegex },
+        { "items.product_details.name": searchRegex }
       ];
     }
 
-    const totalOrdersCount = await OrderModel.countDocuments(filter);
+    const filteredPipeline = [...basePipeline];
+    if (Object.keys(matchStage).length > 0) {
+      filteredPipeline.push({ $match: matchStage });
+    }
 
-    const orders = await OrderModel.find(filter)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limitNum)
-      .populate("userId", "name email mobile")
-      .populate("delivery_address");
+    // Count total matched unique orders
+    const countResult = await OrderModel.aggregate([
+      ...filteredPipeline,
+      { $count: "total" }
+    ]);
+    const totalOrdersCount = countResult[0]?.total || 0;
+
+    // Apply sorting and pagination
+    filteredPipeline.push({ $sort: { createdAt: -1 } });
+    filteredPipeline.push({ $skip: skip });
+    filteredPipeline.push({ $limit: limitNum });
+
+    const orders = await OrderModel.aggregate(filteredPipeline);
 
     return res.status(200).json({
       success: true,
       error: false,
-      message: "All orders retrieved successfully",
+      message: "Admin orders retrieved successfully",
       data: orders,
+      counts,
       pagination: {
         total: totalOrdersCount,
         page: pageNum,
-        totalPages: Math.ceil(totalOrdersCount / limitNum),
+        totalPages: Math.ceil(totalOrdersCount / limitNum) || 1,
         limit: limitNum
       }
     });
@@ -593,29 +709,94 @@ export const getAllOrdersForAdmin = async (req, res) => {
   }
 };
 
-// Update order status (payment status / fulfillment)
+// Update order status (delivery fulfillment / payment status) with inventory adjustment
 export const updateOrderStatus = async (req, res) => {
   try {
-    const { orderId, payment_status } = req.body;
+    const { orderId, delivery_status, payment_status, note } = req.body;
 
-    if (!orderId || !payment_status) {
+    if (!orderId) {
       return res.status(400).json({
         success: false,
         error: true,
-        message: "orderId and payment_status are required"
+        message: "orderId is required"
       });
     }
 
-    const updated = await OrderModel.updateMany(
+    const existingOrders = await OrderModel.find({ orderId: orderId });
+    if (!existingOrders || existingOrders.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: true,
+        message: "Order not found"
+      });
+    }
+
+    const oldDeliveryStatus = existingOrders[0].delivery_status || 'Pending';
+    const updateFields = {};
+
+    if (delivery_status) {
+      updateFields.delivery_status = delivery_status;
+
+      // If transitioning to Cancelled, restore stock
+      if (delivery_status === 'Cancelled' && oldDeliveryStatus !== 'Cancelled') {
+        for (const item of existingOrders) {
+          const prodId = item?.productId?._id || item?.productId;
+          const qty = Number(item?.quantity) || 1;
+          if (prodId) {
+            await ProductModel.updateOne(
+              { _id: prodId },
+              { $inc: { stock: qty } }
+            );
+          }
+        }
+      }
+
+      // If transitioning from Cancelled back to an active state, re-deduct stock
+      if (oldDeliveryStatus === 'Cancelled' && delivery_status !== 'Cancelled') {
+        for (const item of existingOrders) {
+          const prodId = item?.productId?._id || item?.productId;
+          const qty = Number(item?.quantity) || 1;
+          if (prodId) {
+            await ProductModel.updateOne(
+              { _id: prodId },
+              { $inc: { stock: -qty } }
+            );
+          }
+        }
+      }
+    }
+
+    if (payment_status) {
+      updateFields.payment_status = payment_status;
+    }
+
+    const statusNote = note?.trim() 
+      ? note.trim() 
+      : `Status changed to ${delivery_status || payment_status} by Admin`;
+
+    const statusHistoryEntry = {
+      status: delivery_status || oldDeliveryStatus,
+      timestamp: new Date(),
+      note: statusNote
+    };
+
+    await OrderModel.updateMany(
       { orderId: orderId },
-      { $set: { payment_status: payment_status } }
+      { 
+        $set: updateFields,
+        $push: { statusHistory: statusHistoryEntry }
+      }
     );
 
     return res.status(200).json({
       success: true,
       error: false,
-      message: `Order ${orderId} updated to ${payment_status}`,
-      data: updated
+      message: `Order ${orderId} status successfully updated to ${delivery_status || payment_status}.`,
+      data: {
+        orderId,
+        delivery_status: delivery_status || oldDeliveryStatus,
+        payment_status: payment_status || existingOrders[0].payment_status
+      }
     });
   } catch (error) {
     console.error("Error in updateOrderStatus:", error);
