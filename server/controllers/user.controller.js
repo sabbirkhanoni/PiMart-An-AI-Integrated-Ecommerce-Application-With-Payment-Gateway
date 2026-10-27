@@ -601,3 +601,191 @@ export async function getUserLoginDetailsController(request,response){
         })
     }
 }
+
+// ---------------- ADMIN USER MANAGEMENT CONTROLLERS ---------------- //
+
+// 1. Get All Users (Admin) with search, filter, and metrics
+export const getAllUsersAdminController = async (request, response) => {
+    try {
+        let { page = 1, limit = 15, search = "", role = "ALL", status = "ALL" } = request.query;
+
+        page = Number(page) || 1;
+        limit = Number(limit) || 15;
+
+        const query = {};
+
+        if (search && search.trim() !== "") {
+            const escaped = search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            query.$or = [
+                { name: { $regex: escaped, $options: "i" } },
+                { email: { $regex: escaped, $options: "i" } },
+            ];
+        }
+
+        if (role && role !== "ALL") {
+            query.role = role.toUpperCase();
+        }
+
+        if (status && status !== "ALL") {
+            query.status = status;
+        }
+
+        const skip = (page - 1) * limit;
+
+        const [users, totalCount, totalAdmins, totalSuspended] = await Promise.all([
+            UserModel.find(query)
+                .select("-password -refresh_token -forgot_password_otp")
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            UserModel.countDocuments(query),
+            UserModel.countDocuments({ role: "ADMIN" }),
+            UserModel.countDocuments({ status: "Suspended" }),
+        ]);
+
+        const totalAllUsers = await UserModel.countDocuments({});
+
+        return response.status(200).json({
+            message: "Users fetched successfully.",
+            error: false,
+            success: true,
+            data: users,
+            pagination: {
+                totalCount,
+                page,
+                limit,
+                totalPages: Math.ceil(totalCount / limit),
+            },
+            stats: {
+                totalUsers: totalAllUsers,
+                totalAdmins,
+                totalSuspended,
+                totalActive: totalAllUsers - totalSuspended,
+            },
+        });
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false,
+        });
+    }
+};
+
+// 2. Update User Status (Admin)
+export const updateUserStatusAdminController = async (request, response) => {
+    try {
+        const { targetUserId, status } = request.body;
+        const currentAdminId = request.userId;
+
+        if (!targetUserId || !status) {
+            return response.status(400).json({
+                message: "Please provide targetUserId and status.",
+                error: true,
+                success: false,
+            });
+        }
+
+        if (!["Active", "Inactive", "Suspended"].includes(status)) {
+            return response.status(400).json({
+                message: "Invalid status value. Allowed: Active, Inactive, Suspended.",
+                error: true,
+                success: false,
+            });
+        }
+
+        if (String(targetUserId) === String(currentAdminId) && status === "Suspended") {
+            return response.status(400).json({
+                message: "You cannot suspend your own admin account.",
+                error: true,
+                success: false,
+            });
+        }
+
+        const updatedUser = await UserModel.findByIdAndUpdate(
+            targetUserId,
+            { status },
+            { new: true }
+        ).select("-password -refresh_token -forgot_password_otp");
+
+        if (!updatedUser) {
+            return response.status(404).json({
+                message: "User not found.",
+                error: true,
+                success: false,
+            });
+        }
+
+        return response.status(200).json({
+            message: `User status updated to ${status}.`,
+            error: false,
+            success: true,
+            data: updatedUser,
+        });
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false,
+        });
+    }
+};
+
+// 3. Update User Role (Admin)
+export const updateUserRoleAdminController = async (request, response) => {
+    try {
+        const { targetUserId, role } = request.body;
+        const currentAdminId = request.userId;
+
+        if (!targetUserId || !role) {
+            return response.status(400).json({
+                message: "Please provide targetUserId and role.",
+                error: true,
+                success: false,
+            });
+        }
+
+        if (!["ADMIN", "USER"].includes(role.toUpperCase())) {
+            return response.status(400).json({
+                message: "Invalid role value. Allowed: ADMIN, USER.",
+                error: true,
+                success: false,
+            });
+        }
+
+        if (String(targetUserId) === String(currentAdminId) && role.toUpperCase() === "USER") {
+            return response.status(400).json({
+                message: "You cannot revoke your own admin privileges.",
+                error: true,
+                success: false,
+            });
+        }
+
+        const updatedUser = await UserModel.findByIdAndUpdate(
+            targetUserId,
+            { role: role.toUpperCase() },
+            { new: true }
+        ).select("-password -refresh_token -forgot_password_otp");
+
+        if (!updatedUser) {
+            return response.status(404).json({
+                message: "User not found.",
+                error: true,
+                success: false,
+            });
+        }
+
+        return response.status(200).json({
+            message: `User role updated to ${role.toUpperCase()}.`,
+            error: false,
+            success: true,
+            data: updatedUser,
+        });
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false,
+        });
+    }
+};
