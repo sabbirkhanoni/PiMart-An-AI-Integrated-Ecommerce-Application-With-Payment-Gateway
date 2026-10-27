@@ -8,7 +8,8 @@ import ProductDisplayCard from "../components/DesignModel/ProductDisplayCard";
 import { useSelector } from "react-redux";
 import { URLvalidation } from "../utils/URLValidation";
 import NoData from "../components/Mini/NoData";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, PackageCheck } from "lucide-react";
+import ProductSortDropdown from "../components/ProductSortDropdown";
 
 const CategoryWiseProductList = () => {
   const [productListData, setProductListData] = useState([]);
@@ -16,6 +17,8 @@ const CategoryWiseProductList = () => {
   const [loading, setLoading] = useState(false);
   const [, setTotalPages] = useState(1);
   const [displaySubCategoryList, setDisplaySubCategoryList] = useState([]);
+  const [sortBy, setSortBy] = useState("newest");
+  const [inStockOnly, setInStockOnly] = useState(false);
 
   const allCategory = useSelector((state) => state.product.allCategory || []);
   const allSubCategory = useSelector((state) => state.product.allSubCategory || []);
@@ -45,6 +48,8 @@ const CategoryWiseProductList = () => {
           subCategoryId: [subCategoryId],
           page: page || 1,
           limit: 20,
+          sortBy,
+          inStock: inStockOnly,
         },
       });
       const { data: responseData } = response;
@@ -68,7 +73,7 @@ const CategoryWiseProductList = () => {
     window.scrollTo(0, 0);
     setPage(1);
     fetchProductByCategoryAndSubCategoryData();
-  }, [categoryId, subCategoryId]);
+  }, [categoryId, subCategoryId, sortBy, inStockOnly]);
 
   useEffect(() => {
     if (allSubCategory && allSubCategory.length > 0 && categoryId) {
@@ -144,16 +149,36 @@ const CategoryWiseProductList = () => {
 
           {/* Product List (Right Column) */}
           <div className="bg-white rounded-2xl border border-gray-200/80 p-3 md:p-5 shadow-xs min-h-[75vh] flex flex-col">
-            {/* Header info */}
-            <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-100">
-              <h1 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 capitalize">
-                {subCategoryName}
-              </h1>
-              {productListData.length > 0 && (
-                <span className="text-xs text-gray-500 font-medium bg-gray-100 px-3 py-1 rounded-full">
-                  {productListData.length} {productListData.length === 1 ? "Product" : "Products"}
-                </span>
-              )}
+            {/* Header info & Controls */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-4 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <h1 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 capitalize">
+                  {subCategoryName}
+                </h1>
+                {productListData.length > 0 && (
+                  <span className="text-xs text-gray-500 font-medium bg-gray-100 px-3 py-1 rounded-full">
+                    {productListData.length} {productListData.length === 1 ? "Product" : "Products"}
+                  </span>
+                )}
+              </div>
+
+              {/* Toolbar: In-Stock Toggle & Sort Dropdown */}
+              <div className="flex items-center gap-2 self-end sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => setInStockOnly((prev) => !prev)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                    inStockOnly
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-300 shadow-2xs"
+                      : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <PackageCheck size={14} className={inStockOnly ? "text-emerald-600" : "text-gray-400"} />
+                  <span>In Stock</span>
+                </button>
+
+                <ProductSortDropdown currentSort={sortBy} onSortChange={setSortBy} />
+              </div>
             </div>
 
             {/* Products Grid */}
