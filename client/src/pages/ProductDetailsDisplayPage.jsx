@@ -12,6 +12,7 @@ import { URLvalidation } from "../utils/URLValidation";
 import Divider from "../components/Divider";
 import StarRating from "../components/StarRating";
 import ReviewModal from "../components/ReviewModal";
+import WishlistButton from "../components/WishlistButton";
 import toast from "react-hot-toast";
 import {
   ChevronRight,
@@ -475,22 +476,33 @@ const ProductDetailsDisplayPage = () => {
                 )}
               </div>
 
-              {/* Add To Cart Button */}
-              <div className="w-full sm:w-60 pt-1">
-                {productDetailsData.stock === 0 ? (
-                  <button
-                    disabled
-                    className="w-full py-3 px-5 bg-slate-100 text-slate-400 font-bold text-sm rounded cursor-not-allowed border border-slate-200"
-                  >
-                    Out of Stock
-                  </button>
-                ) : (
-                  <AddToCartButton
+              {/* Add To Cart & Wishlist Actions */}
+              <div className="flex items-center gap-3 pt-1 flex-wrap">
+                <div className="w-full sm:w-60">
+                  {productDetailsData.stock === 0 ? (
+                    <button
+                      disabled
+                      className="w-full py-3 px-5 bg-slate-100 text-slate-400 font-bold text-sm rounded cursor-not-allowed border border-slate-200"
+                    >
+                      Out of Stock
+                    </button>
+                  ) : (
+                    <AddToCartButton
+                      productData={productDetailsData}
+                      iconSize={18}
+                      className="h-10 px-4 text-sm font-semibold"
+                    />
+                  )}
+                </div>
+
+                <div className="border border-slate-200 rounded-lg p-1 bg-white hover:border-rose-200 transition-colors shadow-2xs">
+                  <WishlistButton
                     productData={productDetailsData}
-                    iconSize={18}
-                    className="h-10 px-4 text-sm font-semibold"
+                    size={19}
+                    showText={true}
+                    className="px-2.5 py-1"
                   />
-                )}
+                </div>
               </div>
 
               <Divider />
