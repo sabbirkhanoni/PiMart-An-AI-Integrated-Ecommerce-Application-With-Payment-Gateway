@@ -6,11 +6,12 @@ import CartProductModel from '../models/cartproduct.model.js';
 import { calculatePriceWithDiscount } from '../utils/calculatePriceWithDiscount.js';
 import Stripe from '../config/paymentGatewayStripe.js';
 import {getAllOrderedProducts} from '../utils/getAllOrderedProducts.js';
+import CouponModel from '../models/coupon.model.js';
 
 export const CashOnDeliveryPaymentController = async (request, response) => {
     try {
         const userId = request.userId;
-        const { list_item, addressId } = request.body;
+        const { list_item, addressId, couponCode, couponDiscount } = request.body;
 
         if (!list_item || list_item.length === 0) {
             return response.status(400).json({
@@ -30,13 +31,17 @@ export const CashOnDeliveryPaymentController = async (request, response) => {
 
         const commonOrderId = `ORD-${new mongoose.Types.ObjectId()}`;
 
+        const totalDiscount = Number(couponDiscount) || 0;
+        const totalItems = list_item.length;
+        const discountPerItem = totalItems > 0 ? totalDiscount / totalItems : 0;
+
         const payload = list_item.map((item) => {
             const product = item?.productId || {};
             const quantity = Number(item?.quantity) || 1;
             const originalPrice = Number(product?.price) || 0;
             const discount = Number(product?.discount) || 0;
             const discountedUnitPrice = calculatePriceWithDiscount(originalPrice, discount);
-            const itemTotal = discountedUnitPrice * quantity;
+            const itemTotal = Math.max(0, discountedUnitPrice * quantity - discountPerItem);
 
             return {
                 userId : userId,
@@ -51,11 +56,13 @@ export const CashOnDeliveryPaymentController = async (request, response) => {
                 payment_status: "Cash on Delivery",
                 delivery_address: addressId,
                 delivery_status: "Pending",
+                couponCode: couponCode ? String(couponCode).toUpperCase() : "",
+                discountAmt: discountPerItem,
                 statusHistory: [
                     {
                         status: "Pending",
                         timestamp: new Date(),
-                        note: "Order placed successfully with Cash on Delivery."
+                        note: `Order placed successfully with Cash on Delivery.${couponCode ? ` Applied coupon: ${couponCode}` : ''}`
                     }
                 ],
                 subTotalAmt : discountedUnitPrice,
@@ -76,6 +83,14 @@ export const CashOnDeliveryPaymentController = async (request, response) => {
                         { $inc: { stock: -qty } }
                     );
                 }
+            }
+
+            // Increment coupon usage count if applied
+            if (couponCode) {
+                await CouponModel.updateOne(
+                    { code: String(couponCode).toUpperCase() },
+                    { $inc: { usedCount: 1 } }
+                );
             }
 
             await CartProductModel.deleteMany({ userId: userId });
