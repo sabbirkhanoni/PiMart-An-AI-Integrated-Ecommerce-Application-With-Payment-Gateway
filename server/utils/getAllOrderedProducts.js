@@ -30,6 +30,14 @@ export async function getAllOrderedProducts({
         paymentId: paymentId,
         payment_status: payment_status,
         delivery_address: addressId,
+        delivery_status: "Pending",
+        statusHistory: [
+          {
+            status: "Pending",
+            timestamp: new Date(),
+            note: "Order placed successfully with Stripe Online Payment."
+          }
+        ],
         subTotalAmt: Number((totalAmount / quantity).toFixed(2)),
         totalAmt: totalAmount,
       };
