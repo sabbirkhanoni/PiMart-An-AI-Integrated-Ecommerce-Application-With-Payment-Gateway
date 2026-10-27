@@ -4,6 +4,7 @@ import { URLvalidation } from "../../utils/URLValidation";
 import { Link } from "react-router-dom";
 import { calculatePriceWithDiscount } from "../../utils/calculatePriceWithDiscount";
 import AddToCartButton from "./AddToCartButton";
+import { Star } from "lucide-react";
 
 const ProductDisplayCard = ({ productData }) => {
 
@@ -29,6 +30,17 @@ const ProductDisplayCard = ({ productData }) => {
         </div>
         <div className="font-medium text-ellipsis my-1 line-clamp-2 text-md">
           {productData?.name}
+        </div>
+        
+        {/* Rating preview */}
+        <div className="flex items-center gap-1.5 py-0.5">
+          <div className="flex items-center gap-1 text-amber-500 text-xs font-bold bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100/80">
+            <Star size={12} className="fill-amber-400 text-amber-400" />
+            <span>{productData?.averageRating ? Number(productData.averageRating).toFixed(1) : "5.0"}</span>
+          </div>
+          <span className="text-[11px] text-gray-400">
+            ({productData?.totalReviews || 0})
+          </span>
         </div>
         <div className="flex items-center justify-between gap-2">
           <div className="flex flex-col items-center gap-2">
