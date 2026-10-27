@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import logo from "../assets/logo-no-background.png";
 import Search from "./Search";
 
-import { FaUserCircle  } from "react-icons/fa";
+import { FaUserCircle, FaHeart } from "react-icons/fa";
 import { PiShoppingCartFill } from "react-icons/pi";
 import { FaAnglesDown , FaAnglesUp } from "react-icons/fa6";
 
@@ -26,6 +26,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const user = useSelector((state) => state?.user);
+  const wishlistItems = useSelector((state) => state?.wishlist?.wishlistItems || []);
 
   const [openUserMenu, setOpenUserMenu] = useState(false);
   const [openCartModel, setOpenCartModel] = useState(false);
@@ -89,48 +90,85 @@ const Header = () => {
           <div className="">
 
            {/**user icones dispaly only in mobile view **/}
-            <button className="text-neutral-950 mt-3 lg:hidden" onClick={handleMobileUsers}>
+            <div className="flex items-center gap-3 mt-3 lg:hidden">
+              <Link
+                to={user?._id ? "/dashboard/wishlist" : "/login"}
+                title="My Wishlist"
+                className="relative text-neutral-800 p-1 cursor-pointer"
+              >
+                <FaHeart
+                  size={20}
+                  className={wishlistItems.length > 0 ? "text-rose-500" : "text-gray-600"}
+                />
+                {wishlistItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1.5 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+                    {wishlistItems.length}
+                  </span>
+                )}
+              </Link>
+              <button className="text-neutral-950 cursor-pointer" onClick={handleMobileUsers}>
                 <FaUserCircle size={25} />
-            </button>
+              </button>
+            </div>
 
-            {/**login and cart dispaly only in desktop view **/}
-                  <div className="hidden lg:flex items-center gap-20">
+            {/**login, wishlist and cart dispaly only in desktop view **/}
+            <div className="hidden lg:flex items-center gap-8">
+              {user?._id ? (
+                <div className="relative">
+                  <div
+                    onClick={() => setOpenUserMenu((preve) => !preve)}
+                    className="flex select-none items-center gap-2 cursor-pointer hover:text-blue-600 transition-colors font-medium"
+                  >
+                    <p>Account</p>
+                    {openUserMenu ? (
+                      <FaAnglesUp size={15} />
+                    ) : (
+                      <FaAnglesDown size={15} />
+                    )}
+                  </div>
+                  {openUserMenu && (
+                    <div className="absolute right-0 top-12 z-50">
+                      <div className="bg-white shadow-xl rounded-2xl p-4 min-w-56 border border-gray-100">
+                        <UserMenu close={handleCloseUserMenu} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={redirectToLoginPage}
+                  className="text-base font-semibold px-3 text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
+                >
+                  Login
+                </button>
+              )}
 
-                    {
-                      user?._id ? (
-                        <div className="relative">
-                          <div onClick={()=>setOpenUserMenu(preve => !preve)} className="flex select-none items-center gap-2 cursor-pointer">
-                            <p>Account</p>
-                            {
-                              openUserMenu ? (
-                                <FaAnglesUp size={15}/>
-                              ) : (
-                                <FaAnglesDown size={15}/>
-                              )
-                            }
-
-                          </div>
-                            {
-                              openUserMenu && (
-                                <div className='absolute right-0 top-12'>
-                                  <div className="bg-white shadow-lg rounded p-4 min-w-52">
-                                  <UserMenu close={handleCloseUserMenu}/>
-                                  </div>
-                                </div>
-                              )
-                            }
-                        </div>
-                      ) : (
-
-                        <button onClick={redirectToLoginPage} className="text-lg px-3">Login</button>
-                      )
-
+              {/* Wishlist Link in Desktop Header */}
+              <Link
+                to={user?._id ? "/dashboard/wishlist" : "/login"}
+                title="My Wishlist"
+                className="relative flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg text-gray-700 hover:text-rose-600 hover:bg-rose-50/50 transition-all cursor-pointer font-medium text-sm"
+              >
+                <div className="relative">
+                  <FaHeart
+                    size={19}
+                    className={
+                      wishlistItems.length > 0 ? "text-rose-500" : "text-gray-500"
                     }
-                    
-                    
+                  />
+                  {wishlistItems.length > 0 && (
+                    <span className="absolute -top-2 -right-2.5 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+                      {wishlistItems.length}
+                    </span>
+                  )}
+                </div>
+                <span className="hidden xl:inline">Wishlist</span>
+              </Link>
+
               <button
-              onClick={() => setOpenCartModel(true)}
-              className="flex items-center gap-2 bg-[#098dff] hover:bg-[#1477cd] px-4 py-2 rounded-lg text-white">
+                onClick={() => setOpenCartModel(true)}
+                className="flex items-center gap-2 bg-[#098dff] hover:bg-[#1477cd] px-4 py-2 rounded-xl text-white font-semibold shadow-sm hover:shadow-md transition-all cursor-pointer"
+              >
 
                     {/**cart icon */}
                 <div className="animate-pulse ">
