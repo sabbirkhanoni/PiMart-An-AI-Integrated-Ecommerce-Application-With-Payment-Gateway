@@ -573,6 +573,8 @@ const ProductDetailsDisplayPage = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
         </div>
 
         {/* ================= CUSTOMER REVIEWS & RATINGS SECTION ================= */}
