@@ -19,6 +19,7 @@ import sslcommerzRouter from './route/SSLCOMMERZ.route.js';
 import analyticsRouter from './route/analytics.route.js';
 import reviewRouter from './route/review.route.js';
 import wishlistRouter from './route/wishlist.route.js';
+import couponRouter from './route/coupon.route.js';
 
 const app = express();
 
@@ -56,6 +57,7 @@ app.use('/api/order', orderRouter);
 app.use('/api/analytics', analyticsRouter);
 app.use('/api/review', reviewRouter);
 app.use('/api/wishlist', wishlistRouter);
+app.use('/api/coupon', couponRouter);
 app.use('/api', sslcommerzRouter);
 
 
