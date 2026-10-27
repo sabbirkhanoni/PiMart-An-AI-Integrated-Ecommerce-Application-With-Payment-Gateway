@@ -1,5 +1,6 @@
 
 import HeroBannerSlider from '../components/HeroBannerSlider.jsx';
+import PersonalizedRecommendationsSection from '../components/PersonalizedRecommendationsSection.jsx';
 import { useSelector } from 'react-redux';
 import { URLvalidation } from '../utils/URLValidation.js';
 import { useNavigate } from 'react-router-dom';
@@ -85,6 +86,10 @@ export const Home = () => {
 
           </div>
 
+          {/* Personalized "Recommended for You" AI Section */}
+          <div className="container mx-auto px-2">
+            <PersonalizedRecommendationsSection />
+          </div>
 
           {/* Category Wise Product Display Section */}
           {
