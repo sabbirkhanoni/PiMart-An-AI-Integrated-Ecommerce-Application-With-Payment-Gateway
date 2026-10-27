@@ -190,6 +190,18 @@ const SummaryApi = {
   toggleLikeReview: {
     url: "/api/review/like",
     method: "post"
+  },
+  toggleWishlist: {
+    url: "/api/wishlist/toggle",
+    method: "post"
+  },
+  getWishlist: {
+    url: "/api/wishlist/all",
+    method: "get"
+  },
+  checkWishlist: {
+    url: "/api/wishlist/check",
+    method: "get"
   }
 };
 
