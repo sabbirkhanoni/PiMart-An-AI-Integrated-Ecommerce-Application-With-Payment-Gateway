@@ -189,6 +189,7 @@ const CategoryWiseProductList = () => {
                     <ProductDisplayCard
                       productData={product}
                       key={product._id || index}
+                      className="w-full"
                     />
                   ))}
                 </div>

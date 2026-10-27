@@ -215,6 +215,7 @@ const SearchPage = () => {
                     <ProductDisplayCard
                       key={product._id + "searchProduct" + index}
                       productData={product}
+                      className="w-full"
                     />
                   ))}
               </div>
