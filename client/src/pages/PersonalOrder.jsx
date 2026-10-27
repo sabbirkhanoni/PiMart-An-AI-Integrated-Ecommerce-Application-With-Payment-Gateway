@@ -4,6 +4,11 @@ import { Link } from "react-router-dom";
 import { useGlobalContext } from "../contexts/GlobalContext";
 import { DisplayPriceInBDT } from "../utils/DisplayPriceInBDT";
 import toast from "react-hot-toast";
+import Axios from "../utils/Axios";
+import SummaryApi from "../common/SummaryApi";
+import AxiosToastError from "../utils/AxioxToastError";
+import OrderProgressTracker from "../components/OrderProgressTracker";
+import { getDeliveryStatusBadge } from "../utils/orderStatusBadge";
 import {
   Package,
   Calendar,
@@ -14,12 +19,18 @@ import {
   Check,
   ShoppingBag,
   ExternalLink,
+  AlertTriangle,
+  RefreshCw,
+  XCircle,
 } from "lucide-react";
 
 const PersonalOrder = () => {
   const orderedProduct = useSelector((state) => state?.order?.orderDataSet || []);
   const { fetchOrderedProducts } = useGlobalContext();
   const [copiedId, setCopiedId] = useState(null);
+  const [cancelModalOrder, setCancelModalOrder] = useState(null);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelling, setCancelling] = useState(false);
 
   useEffect(() => {
     if (fetchOrderedProducts) {
@@ -44,6 +55,8 @@ const PersonalOrder = () => {
           payment_status: order?.payment_status,
           paymentId: order?.paymentId,
           delivery_address: order?.delivery_address,
+          delivery_status: order?.delivery_status || "Pending",
+          statusHistory: order?.statusHistory || [],
           items: [],
           grandTotal: 0,
         });
@@ -63,6 +76,34 @@ const PersonalOrder = () => {
     setCopiedId(id);
     toast.success("Order ID copied to clipboard!");
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleCancelOrder = async () => {
+    if (!cancelModalOrder) return;
+
+    try {
+      setCancelling(true);
+      const response = await Axios({
+        ...SummaryApi.cancelOrder,
+        data: {
+          orderId: cancelModalOrder.orderId,
+          reason: cancelReason.trim() || "Cancelled by customer",
+        },
+      });
+
+      if (response.data.success) {
+        toast.success(response.data.message || "Order cancelled successfully!");
+        setCancelModalOrder(null);
+        setCancelReason("");
+        if (fetchOrderedProducts) {
+          fetchOrderedProducts();
+        }
+      }
+    } catch (error) {
+      AxiosToastError(error);
+    } finally {
+      setCancelling(false);
+    }
   };
 
   const getPaymentStatusBadge = (status) => {
@@ -143,7 +184,9 @@ const PersonalOrder = () => {
         <div className="space-y-6">
           {groupedOrders.map((orderGroup, index) => {
             const statusBadge = getPaymentStatusBadge(orderGroup?.payment_status);
+            const deliveryBadge = getDeliveryStatusBadge(orderGroup?.delivery_status);
             const address = orderGroup?.delivery_address;
+            const canCancel = (orderGroup?.delivery_status || "Pending").toLowerCase() === "pending";
 
             return (
               <div
@@ -154,7 +197,7 @@ const PersonalOrder = () => {
                 <div className="h-[3px] bg-gradient-to-r from-blue-500 via-indigo-500 to-teal-400" />
 
                 <div className="p-4 md:p-5 space-y-4">
-                  {/* Order Top Bar: ID, Date & Payment Status */}
+                  {/* Order Top Bar: ID, Date, Delivery & Payment Status */}
                   <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-gray-100">
                     <div className="flex flex-wrap items-center gap-3">
                       <div className="flex items-center gap-1.5">
@@ -183,19 +226,42 @@ const PersonalOrder = () => {
                       )}
                     </div>
 
-                    {/* Status Badge & Items Count */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500 font-medium hidden sm:inline">
-                        {orderGroup.items.length} {orderGroup.items.length === 1 ? "Product" : "Products"}
-                      </span>
+                    {/* Status Badges & Actions */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <div
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${deliveryBadge.badgeClass}`}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full ${deliveryBadge.dot}`} />
+                        <span>{deliveryBadge.label}</span>
+                      </div>
+
                       <div
                         className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${statusBadge.className}`}
                       >
                         <span className={`w-1.5 h-1.5 rounded-full ${statusBadge.dotColor}`} />
-                        {statusBadge.text}
+                        <span>{statusBadge.text}</span>
                       </div>
+
+                      {canCancel && (
+                        <button
+                          onClick={() => {
+                            setCancelModalOrder(orderGroup);
+                            setCancelReason("");
+                          }}
+                          className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 hover:bg-rose-600 hover:text-white transition-all cursor-pointer shadow-2xs"
+                        >
+                          <XCircle size={13} />
+                          <span>Cancel Order</span>
+                        </button>
+                      )}
                     </div>
                   </div>
+
+                  {/* Visual Step-by-Step Delivery Progress Tracker */}
+                  <OrderProgressTracker
+                    deliveryStatus={orderGroup?.delivery_status}
+                    statusHistory={orderGroup?.statusHistory}
+                  />
 
                   {/* List of Products in this Order */}
                   <div className="space-y-3">
@@ -331,6 +397,71 @@ const PersonalOrder = () => {
             Start Shopping
             <ExternalLink size={15} />
           </Link>
+        </div>
+      )}
+
+      {/* Cancellation Modal */}
+      {cancelModalOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-5 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                <AlertTriangle size={24} />
+              </div>
+              <div>
+                <h3 className="text-lg font-extrabold text-gray-900">Cancel Order</h3>
+                <p className="text-xs text-gray-500 font-mono">
+                  {cancelModalOrder.orderId}
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-600 leading-relaxed">
+              Are you sure you want to cancel this order? The ordered items will be immediately returned to warehouse stock and you will not be charged.
+            </p>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                Reason for Cancellation (Optional)
+              </label>
+              <textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="e.g. Changed mind, ordered by mistake, etc."
+                rows={3}
+                className="w-full p-3 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all"
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setCancelModalOrder(null);
+                  setCancelReason("");
+                }}
+                disabled={cancelling}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
+              >
+                Nevermind
+              </button>
+              <button
+                type="button"
+                onClick={handleCancelOrder}
+                disabled={cancelling}
+                className="px-5 py-2.5 rounded-xl text-xs font-bold bg-rose-600 text-white hover:bg-rose-700 transition-all shadow-md shadow-rose-200 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {cancelling ? (
+                  <>
+                    <RefreshCw size={13} className="animate-spin" />
+                    <span>Cancelling...</span>
+                  </>
+                ) : (
+                  <span>Yes, Cancel Order</span>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </section>
