@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useGlobalContext } from "../contexts/GlobalContext";
 import { DisplayPriceInBDT } from "../utils/DisplayPriceInBDT";
 import { useNavigate } from "react-router-dom";
@@ -28,12 +28,26 @@ const ProceedPage = () => {
   const navigate = useNavigate();
   const cartProducts = useSelector((state) => state?.cart?.cart);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleCashOnDelivery = async() => {
     try {
+      if (!deliveryAddress || deliveryAddress.length === 0 || !deliveryAddress[selectedAddress]?._id) {
+        toast.error("Please add and select a delivery address.");
+        return;
+      }
+
+      if (!cartProducts || cartProducts.length === 0) {
+        toast.error("Your cart is empty.");
+        return;
+      }
+
       const response = await Axios({
         ...SummaryApi.cashOnDeliveryPayment,
         data: {
-          list_item: cartProducts ,
+          list_item: cartProducts,
           addressId: deliveryAddress[selectedAddress]?._id,
           subTotalAmt : cartWithoutDisTotalPrice,
           totalAmt : cartProductTotalPrice
@@ -71,6 +85,16 @@ const ProceedPage = () => {
 
   const handleStripePayment = async () => {
     try {
+      if (!deliveryAddress || deliveryAddress.length === 0 || !deliveryAddress[selectedAddress]?._id) {
+        toast.error("Please add and select a delivery address.");
+        return;
+      }
+
+      if (!cartProducts || cartProducts.length === 0) {
+        toast.error("Your cart is empty.");
+        return;
+      }
+
       toast.loading("Redirecting to Stripe payment gateway...");
       const response = await Axios({
         ...SummaryApi.stripePaymentGateway,
@@ -107,6 +131,16 @@ const ProceedPage = () => {
 
   const handleSSLCOMMERZPayment = async () => {
     try {
+      if (!deliveryAddress || deliveryAddress.length === 0 || !deliveryAddress[selectedAddress]?._id) {
+        toast.error("Please add and select a delivery address.");
+        return;
+      }
+
+      if (!cartProducts || cartProducts.length === 0) {
+        toast.error("Your cart is empty.");
+        return;
+      }
+
       const response = await Axios({
         ...SummaryApi.SSLCOMMERZPayment,
         data: {

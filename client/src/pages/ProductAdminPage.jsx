@@ -119,7 +119,7 @@ import { IoSearchCircle } from "react-icons/io5";
         <div className="bg-blue-50 p-3 mt-2">
           <div className="min-h-[70vh]">
             <div
-              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 p-2 justify-items-center"
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 p-3 justify-items-center"
               >
                   {
                     allProductData.map((pro,index) =>{

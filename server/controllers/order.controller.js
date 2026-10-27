@@ -10,47 +10,83 @@ import {getAllOrderedProducts} from '../utils/getAllOrderedProducts.js';
 export const CashOnDeliveryPaymentController = async (request, response) => {
     try {
         const userId = request.userId;
-        const { list_item, addressId, subTotalAmt, totalAmt } = request.body;
-        console.log("list_item", list_item);
-        
+        const { list_item, addressId } = request.body;
+
+        if (!list_item || list_item.length === 0) {
+            return response.status(400).json({
+                success: false,
+                error: true,
+                message: "Please select at least one product to proceed."
+            });
+        }
+
+        if (!addressId) {
+            return response.status(400).json({
+                success: false,
+                error: true,
+                message: "Please select a delivery address."
+            });
+        }
+
+        const commonOrderId = `ORD-${new mongoose.Types.ObjectId()}`;
+
         const payload = list_item.map((item) => {
+            const product = item?.productId || {};
+            const quantity = Number(item?.quantity) || 1;
+            const originalPrice = Number(product?.price) || 0;
+            const discount = Number(product?.discount) || 0;
+            const discountedUnitPrice = calculatePriceWithDiscount(originalPrice, discount);
+            const itemTotal = discountedUnitPrice * quantity;
+
             return {
                 userId : userId,
-                orderId: `ORD-${new mongoose.Types.ObjectId()}`,
-                productId: item.productId._id,
+                orderId: commonOrderId,
+                productId: product?._id,
                 product_details: {
-                    name: item.productId.name,
-                    image: item.productId.image,
+                    name: product?.name || "Product",
+                    image: product?.image || [],
                 },
+                quantity: quantity,
                 paymentId: "",
                 payment_status: "Cash on Delivery",
                 delivery_address: addressId,
-                subTotalAmt : subTotalAmt,
-                totalAmt : totalAmt,
-            }
+                subTotalAmt : discountedUnitPrice,
+                totalAmt : itemTotal,
+            };
         });
-        console.log("payload", payload);
 
         const createOrder = await OrderModel.insertMany(payload);
         
         if(createOrder) {
-            const deleteCartProducts = await CartProductModel.deleteMany({ userId: userId });
-            const updateUserModel = await UserModel.updateOne({_id: userId}, { shopping_cart: [] });
+            // Deduct stock for each ordered product
+            for (const item of list_item) {
+                const prodId = item?.productId?._id || item?.productId;
+                const qty = Number(item?.quantity) || 1;
+                if (prodId) {
+                    await ProductModel.updateOne(
+                        { _id: prodId },
+                        { $inc: { stock: -qty } }
+                    );
+                }
+            }
+
+            await CartProductModel.deleteMany({ userId: userId });
+            await UserModel.updateOne({_id: userId}, { shopping_cart: [] });
         }
 
         return response.status(200).json({
             success: true,
             error: false,
-            message: "Cash on delivery Successful.",
+            message: "Cash on delivery order placed successfully.",
             data: createOrder,
-        })
+        });
         
     } catch (error) {
         return response.status(500).json({
             success: false,
             error: true,
             message: error.message || error || 'An error occurred while processing the order.'
-        })
+        });
     }
 }
 
@@ -167,6 +203,17 @@ export const ReceiveWebHookFromStripeController = async (request, response) => {
 
                     
                     await OrderModel.insertMany(orderedProducts);
+
+                    // Deduct stock for each product in Stripe order
+                    for (const prod of orderedProducts) {
+                        if (prod.productId) {
+                            await ProductModel.updateOne(
+                                { _id: prod.productId },
+                                { $inc: { stock: -(prod.quantity || 1) } }
+                            );
+                        }
+                    }
+
                     await UserModel.findByIdAndUpdate(userId, { shopping_cart: [] });
                     await CartProductModel.deleteMany({ userId: userId });
                     console.log('Processed checkout.session.completed and cleared cart for user:', userId);
@@ -197,27 +244,19 @@ export const getAllOrderedProductDetailsController = async (request, response) =
         const userId = request.userId;
         const ordersCollection = await OrderModel.find({userId: userId}).sort({ createdAt: -1 }).populate('delivery_address');
 
-        if(!ordersCollection || ordersCollection.length === 0) {
-            return response.status(404).json({
-                success: false,
-                error: true,
-                message: "No orders found."
-            })
-        }
-
         return response.status(200).json({
             success: true,
             error: false,
             message: "Order Details.",
-            data: ordersCollection,
-        })
+            data: ordersCollection || [],
+        });
 
     } catch (error) {
         return response.status(500).json({
             success: false,
             error: true,
             message: error.message || error || 'An error occurred while fetching the order details.'
-        })
+        });
     }
 }
 

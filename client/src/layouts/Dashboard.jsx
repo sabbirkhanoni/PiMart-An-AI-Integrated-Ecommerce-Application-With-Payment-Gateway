@@ -1,10 +1,13 @@
-import { Outlet } from "react-router-dom"
+import { Outlet, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import UserMenu from "../components/UserMenu.jsx";
 
-
-
-
 const Dashboard = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <section className = 'bg-white'>

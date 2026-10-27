@@ -11,6 +11,7 @@ export const AddProductController = async (request, response) => {
       unit,
       stock,
       price,
+      costPrice,
       discount,
       description,
       more_details,
@@ -40,6 +41,7 @@ export const AddProductController = async (request, response) => {
       unit,
       stock,
       price,
+      costPrice: Number(costPrice) || 0,
       discount,
       description,
       more_details,
@@ -274,7 +276,9 @@ export const GetSingleProductDetailsController = async (request, response) => {
       });
     }
 
-    const productDetails = await ProductModel.findOne({ _id: productId });
+    const productDetails = await ProductModel.findOne({ _id: productId })
+      .populate("category")
+      .populate("subCategory");
 
     return response.status(200).json({
       message: "Product details fetched successfully",

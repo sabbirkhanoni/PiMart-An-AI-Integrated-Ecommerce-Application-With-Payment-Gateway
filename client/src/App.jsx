@@ -16,7 +16,6 @@ import {
 import Axios from "./utils/Axios";
 import AxiosToastError from "./utils/AxioxToastError";
 import GlobalContexts from "./contexts/GlobalContext";
-import { FaShoppingCart } from "react-icons/fa";
 import CartDesignMobileView from "./components/DesignModel/CartDesignMobileView";
 import SaveAmount from "./components/Mini/SaveAmount";
 
@@ -25,8 +24,14 @@ function App() {
   const location = useLocation();
 
   const fetchUser = async () => {
-    const userData = await fetchUserDetails();
-    dispatch(setUserDetails(userData.data));
+    try {
+      const userData = await fetchUserDetails();
+      if (userData?.data) {
+        dispatch(setUserDetails(userData.data));
+      }
+    } catch {
+      // Guest session, no user logged in
+    }
   };
 
   //fetch categories from the server
@@ -39,7 +44,7 @@ function App() {
 
       const { data: responseData } = response;
 
-      if (responseData.success) {
+      if (responseData?.success && Array.isArray(responseData?.data)) {
         dispatch(setAllCategory(responseData.data.sort((a, b) => a.name.localeCompare(b.name))));
       }
     } catch (error) {

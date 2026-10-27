@@ -16,7 +16,7 @@ import cartRouter from './route/cart.route.js';
 import deliveryAddressRouter from './route/deliveryAddress.route.js';
 import orderRouter from './route/order.route.js';
 import sslcommerzRouter from './route/SSLCOMMERZ.route.js';
-
+import analyticsRouter from './route/analytics.route.js';
 
 const app = express();
 
@@ -51,6 +51,7 @@ app.use('/api/product', productRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/delivery-address', deliveryAddressRouter);
 app.use('/api/order', orderRouter);
+app.use('/api/analytics', analyticsRouter);
 app.use('/api', sslcommerzRouter);
 
 

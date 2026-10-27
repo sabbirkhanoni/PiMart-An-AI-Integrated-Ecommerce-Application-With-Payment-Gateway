@@ -64,7 +64,7 @@ const ProductDisplayCard = ({ productData }) => {
           <div className="w-full">
             {
               productData?.stock > 0 ? (
-                <AddToCartButton productData={productData} iconSize={20} className="px-2 py-1" />
+                <AddToCartButton productData={productData} iconSize={16} className="h-8 px-2 text-xs" />
               ) :
               (
                 <div className="text-sm text-red-500 text-center">

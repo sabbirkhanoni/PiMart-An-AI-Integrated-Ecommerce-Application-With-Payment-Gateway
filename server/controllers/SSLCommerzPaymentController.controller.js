@@ -3,8 +3,10 @@ import CartProductModel from "../models/cartproduct.model.js";
 import UserModel from "../models/user.model.js";
 import SSLCommerzPayment from 'sslcommerz-lts';
 import OrderModel from "../models/order.model.js";
+import ProductModel from "../models/product.model.js";
 import mongoose from "mongoose";
 import { validateSSLPayment } from "../utils/API/validateSSLPayment.js";
+import { calculatePriceWithDiscount } from "../utils/calculatePriceWithDiscount.js";
 
 const store_id = process.env.STORE_ID
 const store_passwd = process.env.STORE_PASSWORD
@@ -58,21 +60,30 @@ export const SSLCommerzPaymentController = async (req, res) => {
             });
         }
 
+        const commonOrderId = `ORD-${new mongoose.Types.ObjectId()}`;
         const tran_id = `SSLCOMMERZ_${new Date().getTime()}`;
         const orderedProducts = list_item.map((item) => {
+            const product = item?.productId || {};
+            const quantity = Number(item?.quantity) || 1;
+            const originalPrice = Number(product?.price) || 0;
+            const discount = Number(product?.discount) || 0;
+            const discountedUnitPrice = calculatePriceWithDiscount(originalPrice, discount);
+            const itemTotal = discountedUnitPrice * quantity;
+
             return {
                 userId: userId,
-                orderId: `ORD-${new mongoose.Types.ObjectId()}`,
-                productId: item.productId._id,
+                orderId: commonOrderId,
+                productId: product?._id,
                 product_details: {
-                    name: item.productId.name,
-                    image: item.productId.image,
+                    name: product?.name || "Product",
+                    image: product?.image || [],
                 },
+                quantity: quantity,
                 paymentId: tran_id,
                 payment_status: "pending", // will update to "success" after payment
                 delivery_address: addressId,
-                subTotalAmt: Number(totalAmt),
-                totalAmt: Number(totalAmt),
+                subTotalAmt: discountedUnitPrice,
+                totalAmt: itemTotal,
             };
         });
 
@@ -162,12 +173,38 @@ export const SSLCommerzPaymentSuccessController = async (req, res) => {
             });
         }
 
-         return res.redirect(
+        // Update payment_status to "success" for this transaction
+        const orders = await OrderModel.find({ paymentId: tran_id });
+        if (orders && orders.length > 0) {
+            await OrderModel.updateMany(
+                { paymentId: tran_id },
+                { payment_status: "success" }
+            );
+
+            // Deduct stock for each product in the order
+            for (const order of orders) {
+                if (order.productId) {
+                    await ProductModel.updateOne(
+                        { _id: order.productId },
+                        { $inc: { stock: -(order.quantity || 1) } }
+                    );
+                }
+            }
+
+            // Clear the user's cart on payment success
+            const userId = orders[0].userId;
+            if (userId) {
+                await UserModel.findByIdAndUpdate(userId, { shopping_cart: [] });
+                await CartProductModel.deleteMany({ userId: userId });
+            }
+        }
+
+        return res.redirect(
             `${process.env.FRONTEND_URL}/payment-complete/${tran_id}`
         );
 
     } catch (error) {
-         return res.redirect(
+        return res.redirect(
             `${process.env.FRONTEND_URL}/payment-failed/${tran_id}`
         );
     }
@@ -289,6 +326,16 @@ export const SSLCommerzIpnController = async (req, res) => {
             { paymentId: tran_id },
             { payment_status: "success" }
         );
+
+        // deduct stock
+        for (const order of orders) {
+            if (order.productId) {
+                await ProductModel.updateOne(
+                    { _id: order.productId },
+                    { $inc: { stock: -(order.quantity || 1) } }
+                );
+            }
+        }
 
         // clear cart
         await UserModel.findByIdAndUpdate(userId,{shopping_cart: []});

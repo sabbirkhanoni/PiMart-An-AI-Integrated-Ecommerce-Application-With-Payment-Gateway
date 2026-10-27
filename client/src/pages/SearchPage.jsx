@@ -1,9 +1,8 @@
-import React, { useState } from 'react'
-import ProductSkeletonCardLoading from '../components/Mini/ProductSkeletonCardLoading'
-import Axios from '../utils/Axios'
-import SummaryApi from '../common/SummaryApi'
-import AxiosToastError from '../utils/AxioxToastError'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react';
+import ProductSkeletonCardLoading from '../components/Mini/ProductSkeletonCardLoading';
+import Axios from '../utils/Axios';
+import SummaryApi from '../common/SummaryApi';
+import AxiosToastError from '../utils/AxioxToastError';
 import ProductDisplayCard from '../components/DesignModel/ProductDisplayCard'
 import InfinteScroll from 'react-infinite-scroll-component'
 import { useLocation } from 'react-router-dom'
@@ -61,6 +60,10 @@ const SearchPage = () => {
   }
 
    
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [searchParams]);
+
   useEffect(() => {
     fetchSearchedData();
   }, [page, searchParams]);

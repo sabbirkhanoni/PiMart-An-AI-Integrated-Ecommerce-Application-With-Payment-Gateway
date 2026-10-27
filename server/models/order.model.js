@@ -3,53 +3,59 @@
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
-    userId : {
-        type : mongoose.Schema.ObjectId,
-        ref : 'User'
+    userId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User'
     },
-    orderId : {
-        type : String,
-        required : [true, "Order Id is required"],
-        unique : true
+    orderId: {
+        type: String,
+        required: [true, "Order Id is required"],
     },
-    productId : {
-        type : mongoose.Schema.ObjectId,
-        ref : 'product'
+    productId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'product'
     },
-    product_details : {
-        _id : String,
-        name : String,
-        image :Array,
+    product_details: {
+        _id: String,
+        name: String,
+        image: Array,
     },
-    paymentId : {
-        type : String,
-        default : ""
+    quantity: {
+        type: Number,
+        default: 1
     },
-    payment_status : {
-        type : String,
-        default : ""
+    paymentId: {
+        type: String,
+        default: ""
     },
-    delivery_address : {
-        type : mongoose.Schema.ObjectId,
+    payment_status: {
+        type: String,
+        default: ""
+    },
+    delivery_address: {
+        type: mongoose.Schema.ObjectId,
         ref: 'address'
     },
-    subTotalAmt : {
-        type : Number,
+    subTotalAmt: {
+        type: Number,
         default: 0
     },
-    totalAmt : {
-        type : Number,
-        default : 0
+    totalAmt: {
+        type: Number,
+        default: 0
     },
-    invoice_receipt : {
-        type : String,
-        default : ""
+    invoice_receipt: {
+        type: String,
+        default: ""
     }
 }, {
-    timestamps : true
+    timestamps: true
 });
 
 
-const OrderModel = mongoose.model('order',orderSchema)
+const OrderModel = mongoose.model('order', orderSchema);
+
+// Drop unique index on orderId if it exists to allow multiple products in the same order
+OrderModel.collection.dropIndex('orderId_1').catch(() => { });
 
 export default OrderModel;

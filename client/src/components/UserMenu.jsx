@@ -1,7 +1,7 @@
 
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
-import  Divider from './Divider';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import Divider from './Divider';
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
 import { logout } from '../store/userSlice';
@@ -10,95 +10,206 @@ import AxiosToastError from '../utils/AxioxToastError';
 import PropTypes from 'prop-types';
 import { ImProfile } from "react-icons/im";
 import isAdmin from '../utils/checkIsAdmin';
+import { 
+  FiTrendingUp, 
+  FiLayers, 
+  FiGrid, 
+  FiUploadCloud, 
+  FiBox, 
+  FiShoppingBag, 
+  FiMapPin, 
+  FiLogOut 
+} from "react-icons/fi";
 
-const UserMenu = ({close}) => {
-    const user = useSelector((state) => state.user);
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    
-  //logout section
-  const handleLogout = async() => {
+const UserMenu = ({ close }) => {
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Logout section
+  const handleLogout = async () => {
     try {
       const response = await Axios({
-        ...SummaryApi.logout
-      })
-      if(response.data.success){
-        //clear the user data from redux store
-        if(close){
-          close();
-        }
-
-       
-       dispatch(logout());
-       localStorage.clear();
-      toast.success(response.data.message);
-      navigate("/");
+        ...SummaryApi.logout,
+      });
+      if (response.data.success) {
+        if (close) close();
+        dispatch(logout());
+        localStorage.clear();
+        toast.success(response.data.message);
+        navigate("/");
       }
-    } catch(error){
+    } catch (error) {
       AxiosToastError(error);
     }
+  };
 
-    }
+  const handleClose = () => {
+    if (close) close();
+  };
 
-
-    //for closing the menu
-    const handleClose = () => {
-        if(close){
-            close();
-        }
-    }
+  const currentPath = location.pathname;
 
   return (
-    <div>
-        <div className='font-semibold text-lg'>Profile</div>
-        <div className='text-lg flex items-center gap-5'>
-          <span className='max-w-52 text-ellipsis line-clamp-1'>{user.name || user.mobile} </span>
-          <Link onClick={handleClose} to={"/dashboard/profile"} className='hover:bg-blue-500 hover:text-white'>
-            <ImProfile size={20}/>
-          </Link>
-          <span className="text-blue-600 font-semibold text-sm">
-            { isAdmin(user.role) ? "(ADMIN)" : ""}
+    <div className="space-y-3">
+      {/* Profile Header */}
+      <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50/50 rounded-2xl border border-blue-100/80 flex items-center justify-between">
+        <div className="min-w-0 flex-1 pr-2">
+          <div className="flex items-center gap-1.5">
+            <span className="font-bold text-gray-900 text-sm truncate block">
+              {user.name || user.mobile || "My Account"}
             </span>
+            {isAdmin(user.role) && (
+              <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-600 text-white shrink-0">
+                ADMIN
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-gray-500 truncate mt-0.5">
+            {user.email || "Store Member"}
+          </p>
         </div>
 
-        <Divider/>
-        <div className='text-md grid gap-2'>
+        <Link
+          onClick={handleClose}
+          to="/dashboard/profile"
+          title="View Profile"
+          className="w-9 h-9 rounded-xl bg-white border border-blue-200 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors shadow-2xs shrink-0 cursor-pointer"
+        >
+          <ImProfile size={16} />
+        </Link>
+      </div>
 
-            {
-              isAdmin(user.role) && (
-                <Link onClick={handleClose} to={"/dashboard/category"} className='px-2 hover:bg-blue-500 hover:text-white py-2'>Category</Link>
-              )
-            }
+      <Divider />
 
-            {
-              isAdmin(user.role) && (
-                <Link onClick={handleClose} to={"/dashboard/subcategory"} className='px-2 hover:bg-blue-500 hover:text-white py-2'>Sub Category</Link>
-              )
-            }
+      {/* Navigation Links */}
+      <div className="space-y-1 text-sm font-medium">
+        {isAdmin(user.role) && (
+          <>
+            <div className="px-3 pt-1 pb-1 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+              Business Intelligence
+            </div>
 
-           {
-              isAdmin(user.role) && (
-                <Link onClick={handleClose} to={"/dashboard/upload-product"} className='px-2 hover:bg-blue-500 hover:text-white py-2'>Upload Products</Link>
-              )
-            }
+            <Link
+              onClick={handleClose}
+              to="/dashboard/analytics"
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all ${
+                currentPath === "/dashboard/analytics" || currentPath === "/dashboard"
+                  ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-200"
+                  : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+              }`}
+            >
+              <FiTrendingUp size={17} />
+              <span>Business Analytics</span>
+            </Link>
 
-          {
-              isAdmin(user.role) && (
-                <Link onClick={handleClose} to={"/dashboard/product"} className='px-2 hover:bg-blue-500 hover:text-white py-2'>Products</Link> 
-              )
-            }
+            <div className="px-3 pt-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+              Inventory & Catalog
+            </div>
 
-            <Link onClick={handleClose} to={"/dashboard/orders"} className='px-2 hover:bg-blue-500 hover:text-white py-2'>Orders</Link>
-            <Link onClick={handleClose} to={"/dashboard/address"} className='px-2  hover:bg-blue-500 hover:text-white py-2'>Address</Link>
-            <button onClick={handleLogout} className='text-left px-2 hover:bg-blue-500 hover:text-white py-2'>Log Out</button>
+            <Link
+              onClick={handleClose}
+              to="/dashboard/category"
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all ${
+                currentPath === "/dashboard/category"
+                  ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-200"
+                  : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+              }`}
+            >
+              <FiLayers size={17} />
+              <span>Categories</span>
+            </Link>
+
+            <Link
+              onClick={handleClose}
+              to="/dashboard/subcategory"
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all ${
+                currentPath === "/dashboard/subcategory"
+                  ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-200"
+                  : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+              }`}
+            >
+              <FiGrid size={17} />
+              <span>Sub Categories</span>
+            </Link>
+
+            <Link
+              onClick={handleClose}
+              to="/dashboard/upload-product"
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all ${
+                currentPath === "/dashboard/upload-product"
+                  ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-200"
+                  : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+              }`}
+            >
+              <FiUploadCloud size={17} />
+              <span>Upload Product</span>
+            </Link>
+
+            <Link
+              onClick={handleClose}
+              to="/dashboard/product"
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all ${
+                currentPath === "/dashboard/product"
+                  ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-200"
+                  : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+              }`}
+            >
+              <FiBox size={17} />
+              <span>All Products</span>
+            </Link>
+
+            <div className="px-3 pt-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+              Customer Account
+            </div>
+          </>
+        )}
+
+        <Link
+          onClick={handleClose}
+          to="/dashboard/orders"
+          className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all ${
+            currentPath === "/dashboard/orders"
+              ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-200"
+              : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+          }`}
+        >
+          <FiShoppingBag size={17} />
+          <span>My Orders</span>
+        </Link>
+
+        <Link
+          onClick={handleClose}
+          to="/dashboard/address"
+          className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all ${
+            currentPath === "/dashboard/address"
+              ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-200"
+              : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+          }`}
+        >
+          <FiMapPin size={17} />
+          <span>Saved Addresses</span>
+        </Link>
+
+        <div className="pt-2">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-red-600 hover:bg-red-50 font-semibold transition-colors cursor-pointer text-left"
+          >
+            <FiLogOut size={17} />
+            <span>Log Out</span>
+          </button>
         </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
 UserMenu.propTypes = {
-    close : PropTypes.func
-}
+  close: PropTypes.func,
+};
 
 export default UserMenu;
 

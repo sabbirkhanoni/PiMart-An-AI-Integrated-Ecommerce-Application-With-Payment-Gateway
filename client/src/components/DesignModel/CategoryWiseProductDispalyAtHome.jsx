@@ -1,9 +1,8 @@
-import React, { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AxiosToastError from '../../utils/AxioxToastError';
 import Axios from '../../utils/Axios';
 import SummaryApi from '../../common/SummaryApi';
-import { useEffect } from 'react';
 import ProductSkeletonCardLoading from '../Mini/ProductSkeletonCardLoading';
 import ProductDisplayCard from './ProductDisplayCard';
 import { FaAnglesLeft, FaAnglesRight } from "react-icons/fa6";
@@ -52,33 +51,34 @@ const CategoryWiseProductDispalyAtHome = ({categoryId,categoryName}) => {
     }
 
     const handleRedirectToCategoryWiseProductList = () => {
-          const subCategory = fetchAllSubCategoryDataFromReduxStore.find(subCat => {
-            const filteredSubCategory = subCat.category.some(cat => {
-              return cat._id == categoryId
-            })
-            return filteredSubCategory ? true : null
-          })
-          const url = `/${URLvalidation(categoryName)}-${categoryId}/${URLvalidation(subCategory?.name)}-${subCategory?._id}`;
-          return url;
-      }
+        const subCategory = fetchAllSubCategoryDataFromReduxStore?.find(subCat => {
+            return subCat?.category?.some(cat => {
+                return (cat?._id || cat) == categoryId;
+            });
+        });
+        if (subCategory) {
+            return `/${URLvalidation(categoryName)}-${categoryId}/${URLvalidation(subCategory?.name)}-${subCategory?._id}`;
+        }
+        return `/${URLvalidation(categoryName)}-${categoryId}`;
+    };
 
     const redirectedURL = handleRedirectToCategoryWiseProductList();
 
     useEffect(() => {
         fetchProductByCategoryWise();
-    }, [categoryId])
+    }, [categoryId]);
 
     useEffect(() => {
         if(productDataByCategoryWise.length > 0) {
             fetchProductByCategoryWise();
         }
-    }, [user._id])
+    }, [user._id]);
 
     const loadingProductCardNumberToShow = new Array(6).fill(null);
 
-  if (!loading && productDataByCategoryWise.length < 7) {
-    return null;
-  }
+    if (!loading && productDataByCategoryWise.length < 6) {
+        return null;
+    }
 
   return (
           <div>

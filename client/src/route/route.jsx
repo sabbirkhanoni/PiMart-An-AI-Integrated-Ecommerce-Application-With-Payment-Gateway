@@ -17,12 +17,14 @@ import SubCategoryPage from "../pages/SubCategoryPage";
 import UploadProductPage from "../pages/UploadProductPage";
 import ProductPage from "../pages/ProductAdminPage";
 import AdminPermission from "../layouts/AdminPermission";
+import AnalyticsDashboardPage from "../pages/AnalyticsDashboardPage";
 import CategoryWiseProductList from "../pages/CategoryWiseProductList";
 import ProductDetailsDisplayPage from "../pages/ProductDetailsDisplayPage";
 import CartModel from "../components/DesignModel/CartModel";
 import ProceedPage from "../pages/ProceedPage";
 import Complete from "../pages/Complete";
 import Failed from "../pages/Failed";
+import DashboardIndex from "../components/DashboardIndex";
 
 const router = createBrowserRouter([
   {
@@ -65,6 +67,18 @@ const router = createBrowserRouter([
         path: "dashboard",
         element: <Dashboard />,
         children: [
+          {
+            path: "",
+            element: <DashboardIndex />,
+          },
+          {
+            path: "analytics",
+            element: (
+              <AdminPermission>
+                <AnalyticsDashboardPage />
+              </AdminPermission>
+            ),
+          },
           {
             path: "profile",
             element: <PersonalDetails />,

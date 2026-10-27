@@ -9,23 +9,29 @@ export async function getAllOrderedProducts({
   payment_status,
 }) {
   const productList = [];
+  const commonOrderId = `ORD-${new mongoose.Types.ObjectId()}`;
+
   if (line_items && line_items.data.length > 0) {
     for (const item of line_items.data) {
       const product = await Stripe.products.retrieve(item.price.product);
 
+      const quantity = item.quantity || 1;
+      const totalAmount = Number(item.amount_total / 100);
+
       const payload = {
         userId: userId,
-        orderId: `ORD-${new mongoose.Types.ObjectId()}`,
+        orderId: commonOrderId,
         productId: product.metadata.productId,
         product_details: {
           name: product.name,
           image: product.images,
         },
+        quantity: quantity,
         paymentId: paymentId,
         payment_status: payment_status,
         delivery_address: addressId,
-        subTotalAmt: Number(item.amount_total / 100), // Stripe amount is in cents
-        totalAmt: Number(item.amount_total / 100), // Stripe amount is in cents
+        subTotalAmt: Number((totalAmount / quantity).toFixed(2)),
+        totalAmt: totalAmount,
       };
 
       productList.push(payload);
