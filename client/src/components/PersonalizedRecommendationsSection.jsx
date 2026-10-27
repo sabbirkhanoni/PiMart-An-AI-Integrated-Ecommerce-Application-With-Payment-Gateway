@@ -102,15 +102,14 @@ const PersonalizedRecommendationsSection = () => {
       ) : (
         <div
           ref={scrollContainerRef}
-          className="flex items-stretch gap-3 overflow-x-auto scrollbar-none py-2 scroll-smooth"
+          className="flex items-stretch gap-3 md:gap-4 overflow-x-auto scrollbar-none py-2 px-1 scroll-smooth"
         >
           {products.map((product, index) => (
-            <div
+            <ProductDisplayCard
               key={product._id + "rec" + index}
-              className="w-40 sm:w-44 md:w-52 shrink-0 flex"
-            >
-              <ProductDisplayCard productData={product} />
-            </div>
+              productData={product}
+              className="w-[185px] sm:w-[205px] md:w-[220px] shrink-0"
+            />
           ))}
         </div>
       )}
