@@ -18,6 +18,7 @@ import UploadProductPage from "../pages/UploadProductPage";
 import ProductPage from "../pages/ProductAdminPage";
 import AdminPermission from "../layouts/AdminPermission";
 import AnalyticsDashboardPage from "../pages/AnalyticsDashboardPage";
+import AdminOrdersPage from "../pages/AdminOrdersPage";
 import CategoryWiseProductList from "../pages/CategoryWiseProductList";
 import ProductDetailsDisplayPage from "../pages/ProductDetailsDisplayPage";
 import CartModel from "../components/DesignModel/CartModel";
@@ -76,6 +77,14 @@ const router = createBrowserRouter([
             element: (
               <AdminPermission>
                 <AnalyticsDashboardPage />
+              </AdminPermission>
+            ),
+          },
+          {
+            path: "admin-orders",
+            element: (
+              <AdminPermission>
+                <AdminOrdersPage />
               </AdminPermission>
             ),
           },
