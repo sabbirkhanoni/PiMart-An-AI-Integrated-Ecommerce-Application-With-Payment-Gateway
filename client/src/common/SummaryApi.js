@@ -202,6 +202,26 @@ const SummaryApi = {
   checkWishlist: {
     url: "/api/wishlist/check",
     method: "get"
+  },
+  createCoupon: {
+    url: "/api/coupon/create",
+    method: "post"
+  },
+  getAllCouponsAdmin: {
+    url: "/api/coupon/get-all",
+    method: "get"
+  },
+  updateCoupon: {
+    url: "/api/coupon/update",
+    method: "put"
+  },
+  deleteCoupon: {
+    url: "/api/coupon/delete",
+    method: "delete"
+  },
+  applyCoupon: {
+    url: "/api/coupon/apply",
+    method: "post"
   }
 };
 
