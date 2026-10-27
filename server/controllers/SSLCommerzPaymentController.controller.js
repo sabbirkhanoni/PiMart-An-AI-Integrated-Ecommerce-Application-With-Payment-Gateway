@@ -82,6 +82,14 @@ export const SSLCommerzPaymentController = async (req, res) => {
                 paymentId: tran_id,
                 payment_status: "pending", // will update to "success" after payment
                 delivery_address: addressId,
+                delivery_status: "Pending",
+                statusHistory: [
+                    {
+                        status: "Pending",
+                        timestamp: new Date(),
+                        note: "Order initiated via SSLCommerz Payment Gateway."
+                    }
+                ],
                 subTotalAmt: discountedUnitPrice,
                 totalAmt: itemTotal,
             };
