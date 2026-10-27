@@ -26,6 +26,7 @@ import ProceedPage from "../pages/ProceedPage";
 import Complete from "../pages/Complete";
 import Failed from "../pages/Failed";
 import WishlistPage from "../pages/WishlistPage";
+import AdminCouponsPage from "../pages/AdminCouponsPage";
 import DashboardIndex from "../components/DashboardIndex";
 
 const router = createBrowserRouter([
@@ -86,6 +87,14 @@ const router = createBrowserRouter([
             element: (
               <AdminPermission>
                 <AdminOrdersPage />
+              </AdminPermission>
+            ),
+          },
+          {
+            path: "coupons",
+            element: (
+              <AdminPermission>
+                <AdminCouponsPage />
               </AdminPermission>
             ),
           },
