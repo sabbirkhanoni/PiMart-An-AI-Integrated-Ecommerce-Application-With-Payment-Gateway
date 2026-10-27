@@ -22,6 +22,8 @@ import wishlistRouter from './route/wishlist.route.js';
 import couponRouter from './route/coupon.route.js';
 import bannerRouter from './route/banner.route.js';
 import recommendationRouter from './route/recommendation.route.js';
+import mongoSanitize from './middleware/mongoSanitize.js';
+import { generalLimiter } from './middleware/rateLimiter.js';
 
 const app = express();
 
@@ -32,13 +34,19 @@ app.use(cors({
     origin: process.env.FRONTEND_URL,
 }));
 
-
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
     crossOriginOpenerPolicy: false
 }));
+
+// NoSQL Injection sanitization for body, query, params
+app.use(mongoSanitize);
+
+// General rate limiter for all API endpoints
+app.use('/api', generalLimiter);
 
 const PORT = process.env.PORT || 8080;
 
