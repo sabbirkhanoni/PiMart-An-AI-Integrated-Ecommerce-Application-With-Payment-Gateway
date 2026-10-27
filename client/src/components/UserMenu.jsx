@@ -21,6 +21,7 @@ import {
   FiHeart,
   FiTag,
   FiImage,
+  FiUsers,
   FiLogOut 
 } from "react-icons/fi";
 
@@ -145,6 +146,19 @@ const UserMenu = ({ close }) => {
             >
               <FiImage size={17} />
               <span>Banner Sliders</span>
+            </Link>
+
+            <Link
+              onClick={handleClose}
+              to="/dashboard/users"
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all ${
+                currentPath === "/dashboard/users"
+                  ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-200"
+                  : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+              }`}
+            >
+              <FiUsers size={17} />
+              <span>Customer Accounts</span>
             </Link>
 
             <div className="px-3 pt-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-gray-400">

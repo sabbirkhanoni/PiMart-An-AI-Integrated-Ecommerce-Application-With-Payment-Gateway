@@ -28,6 +28,7 @@ import Failed from "../pages/Failed";
 import WishlistPage from "../pages/WishlistPage";
 import AdminCouponsPage from "../pages/AdminCouponsPage";
 import AdminBannersPage from "../pages/AdminBannersPage";
+import AdminUsersPage from "../pages/AdminUsersPage";
 import DashboardIndex from "../components/DashboardIndex";
 
 const router = createBrowserRouter([
@@ -104,6 +105,14 @@ const router = createBrowserRouter([
             element: (
               <AdminPermission>
                 <AdminBannersPage />
+              </AdminPermission>
+            ),
+          },
+          {
+            path: "users",
+            element: (
+              <AdminPermission>
+                <AdminUsersPage />
               </AdminPermission>
             ),
           },
