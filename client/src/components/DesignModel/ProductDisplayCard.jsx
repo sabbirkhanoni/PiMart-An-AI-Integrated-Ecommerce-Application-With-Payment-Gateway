@@ -4,6 +4,7 @@ import { URLvalidation } from "../../utils/URLValidation";
 import { Link } from "react-router-dom";
 import { calculatePriceWithDiscount } from "../../utils/calculatePriceWithDiscount";
 import AddToCartButton from "./AddToCartButton";
+import WishlistButton from "../WishlistButton";
 import { Star } from "lucide-react";
 
 const ProductDisplayCard = ({ productData }) => {
@@ -17,7 +18,12 @@ const ProductDisplayCard = ({ productData }) => {
 
   return (
     <Link to={URL}>
-      <div className="lg:h-[400px] w-[175px] h-[310px] lg:w-[350px] border border-gray-200 p-2 lg:p-4 lg:space-y-3 grid max-w-58 rounded shadow-lg overflow-hidden hover:shadow-lg">
+      <div className="relative lg:h-[400px] w-[175px] h-[310px] lg:w-[350px] border border-gray-200 p-2 lg:p-4 lg:space-y-3 grid max-w-58 rounded shadow-lg overflow-hidden hover:shadow-lg group">
+        {/* Wishlist Floating Button */}
+        <div className="absolute top-2 right-2 z-10">
+          <WishlistButton productData={productData} size={15} />
+        </div>
+
         <div className="min-h-25 lg:min-h-20 max-h-15 lg:max-h-35 pt-2 rounded">
           <img
             src={productData?.image[0]}
