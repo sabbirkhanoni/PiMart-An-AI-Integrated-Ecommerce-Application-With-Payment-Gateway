@@ -254,6 +254,14 @@ const SummaryApi = {
   updateUserRoleAdmin: {
     url: "/api/user/admin/update-role",
     method: "put"
+  },
+  getPersonalizedRecommendations: {
+    url: "/api/recommendation/personalized",
+    method: "get"
+  },
+  getRelatedProducts: {
+    url: "/api/recommendation/related",
+    method: "get"
   }
 };
 
