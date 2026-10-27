@@ -4,6 +4,7 @@ import productReducer from './productSlice'
 import cartReducer from './cart.store'
 import deliveryAddressReducer from './deliveryAddressSlice'
 import orderedReducer from './orderedSlice'
+import wishlistReducer from './wishlistSlice'
 
 
 export default configureStore({
@@ -12,6 +13,7 @@ export default configureStore({
     product : productReducer,
     cart : cartReducer,
     deliveryAddress : deliveryAddressReducer,
-    order : orderedReducer
+    order : orderedReducer,
+    wishlist: wishlistReducer
   }
 })
