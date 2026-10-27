@@ -174,6 +174,22 @@ const SummaryApi = {
   cancelOrder: {
     url: "/api/order/cancel-order",
     method: "put"
+  },
+  createOrUpdateReview: {
+    url: "/api/review/create",
+    method: "post"
+  },
+  getProductReviews: {
+    url: "/api/review/product",
+    method: "get"
+  },
+  deleteReview: {
+    url: "/api/review",
+    method: "delete"
+  },
+  toggleLikeReview: {
+    url: "/api/review/like",
+    method: "post"
   }
 };
 
