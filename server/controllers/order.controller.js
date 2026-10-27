@@ -50,6 +50,14 @@ export const CashOnDeliveryPaymentController = async (request, response) => {
                 paymentId: "",
                 payment_status: "Cash on Delivery",
                 delivery_address: addressId,
+                delivery_status: "Pending",
+                statusHistory: [
+                    {
+                        status: "Pending",
+                        timestamp: new Date(),
+                        note: "Order placed successfully with Cash on Delivery."
+                    }
+                ],
                 subTotalAmt : discountedUnitPrice,
                 totalAmt : itemTotal,
             };
