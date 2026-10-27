@@ -21,6 +21,7 @@ import reviewRouter from './route/review.route.js';
 import wishlistRouter from './route/wishlist.route.js';
 import couponRouter from './route/coupon.route.js';
 import bannerRouter from './route/banner.route.js';
+import recommendationRouter from './route/recommendation.route.js';
 
 const app = express();
 
@@ -60,6 +61,7 @@ app.use('/api/review', reviewRouter);
 app.use('/api/wishlist', wishlistRouter);
 app.use('/api/coupon', couponRouter);
 app.use('/api/banner', bannerRouter);
+app.use('/api/recommendation', recommendationRouter);
 app.use('/api', sslcommerzRouter);
 
 
