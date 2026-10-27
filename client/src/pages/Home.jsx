@@ -1,6 +1,5 @@
 
-import largeBanner from '../assets/largeBanner.png';
-import mobileSizeBanner from '../assets/mobileSize-banner.png';
+import HeroBannerSlider from '../components/HeroBannerSlider.jsx';
 import { useSelector } from 'react-redux';
 import { URLvalidation } from '../utils/URLValidation.js';
 import { useNavigate } from 'react-router-dom';
@@ -33,21 +32,11 @@ export const Home = () => {
   return (
     <section className='bg-white'>
       <div
-        className='container mx-auto my-1'>
+        className='container mx-auto my-1 px-2'>
 
-          {/* Banner Section */}
-          <div className={`min-h-full w-full shadow-xl h-full bg-white p-5 rounded ${!largeBanner || !mobileSizeBanner && 'animate-pulse'}`}>
-            <img 
-              src={largeBanner}
-              alt="Banner"
-              className='w-full h-full object-cover rounded hidden lg:block md:block'
-              />
-
-            <img 
-              src={mobileSizeBanner}
-              alt="Banner"
-              className='w-full h-full object-cover lg:hidden md:hidden rounded'
-              />
+          {/* Dynamic Hero Banner Slider */}
+          <div className="my-2">
+            <HeroBannerSlider />
           </div>
 
           {/* Category Middle Section */}
