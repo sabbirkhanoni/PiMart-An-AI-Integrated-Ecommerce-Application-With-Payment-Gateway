@@ -25,6 +25,7 @@ import CartModel from "../components/DesignModel/CartModel";
 import ProceedPage from "../pages/ProceedPage";
 import Complete from "../pages/Complete";
 import Failed from "../pages/Failed";
+import WishlistPage from "../pages/WishlistPage";
 import DashboardIndex from "../components/DashboardIndex";
 
 const router = createBrowserRouter([
@@ -99,6 +100,10 @@ const router = createBrowserRouter([
           {
             path: "address",
             element: <PersonalAddress />,
+          },
+          {
+            path: "wishlist",
+            element: <WishlistPage />,
           },
           {
             path: "category",
