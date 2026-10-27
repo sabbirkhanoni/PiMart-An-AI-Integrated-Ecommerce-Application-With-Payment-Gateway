@@ -170,6 +170,10 @@ const SummaryApi = {
   updateOrderStatus: {
     url: "/api/analytics/update-order-status",
     method: "put"
+  },
+  cancelOrder: {
+    url: "/api/order/cancel-order",
+    method: "put"
   }
 };
 
